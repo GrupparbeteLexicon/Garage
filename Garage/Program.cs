@@ -31,6 +31,7 @@ namespace Garage
                 .WithStaticAssets();
 
             app.Run();
+            Console.WriteLine("Hello World");
         }
     }
 }

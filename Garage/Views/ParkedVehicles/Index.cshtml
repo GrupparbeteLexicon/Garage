@@ -13,7 +13,10 @@
 <form method="get">
     <input type="text" name="search" placeholder="Search registration..." value="@Context.Request.Query["search"]" />
     <button type="submit" class="btn btn-primary">Search</button>
-    <a asp-action="Index" class="btn btn-secondary"> Clear search</a>
+    <a asp-action="Index"
+       class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")">
+        Clear
+    </a>
 </form>
 
 <table class="table">

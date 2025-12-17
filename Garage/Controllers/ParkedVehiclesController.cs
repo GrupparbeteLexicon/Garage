@@ -30,6 +30,8 @@ namespace Garage.Controllers
         {
             var query = _context.ParkedVehicle.AsQueryable();
 
+            ViewData["Search"] = search;
+
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(v =>

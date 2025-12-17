@@ -66,7 +66,7 @@ namespace Garage.Controllers
 
             if (parkedVehicle == null) 
             {
-                return Problem("Entity set 'GarageContext.ParkedVehicle'  is null.");
+                 return Problem("Entity set 'GarageContext.ParkedVehicle'  is null.");
             }
 
             if (ModelState.IsValid && isUnique)
@@ -83,14 +83,13 @@ namespace Garage.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            else
+            else if (!isUnique)
             {
-                if (!isUnique)
-                {
-                    ModelState.AddModelError("Registration", "A vehicle with this registration already exists.");
-                }
+                ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
             }
-                return View(parkedVehicle);
+
+            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+            return View(viewModel);
         }
 
         // GET: ParkedVehicles/Edit/5
@@ -114,7 +113,7 @@ namespace Garage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
         {
-            if (id != parkedVehicle.Id)
+           if (id != parkedVehicle.Id)
             {
                 return NotFound();
             }
@@ -139,7 +138,9 @@ namespace Garage.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(parkedVehicle);
+
+            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+            return View(viewModel);
         }
 
         // GET: ParkedVehicles/Delete/5

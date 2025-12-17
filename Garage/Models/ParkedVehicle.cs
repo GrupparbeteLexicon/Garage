@@ -1,7 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.ComponentModel.DataAnnotations;
 
 namespace Garage.Models
 {
+    [Index(nameof(Registration), IsUnique = true)]
     public class ParkedVehicle
     {
             public int Id { get; set; }

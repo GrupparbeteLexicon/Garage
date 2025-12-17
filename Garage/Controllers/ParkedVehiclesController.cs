@@ -62,13 +62,35 @@ namespace Garage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
         {
-            if (ModelState.IsValid)
+            bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration);
+
+            if (parkedVehicle == null) 
+            {
+                return Problem("Entity set 'GarageContext.ParkedVehicle'  is null.");
+            }
+
+            if (ModelState.IsValid && isUnique)
             {
                 _context.Add(parkedVehicle);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    await _context.SaveChangesAsync();
+                } catch (DbUpdateException ex)
+                {
+                    ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
+                    Console.WriteLine(ex.Message);
+                    return View(parkedVehicle);
+                }
                 return RedirectToAction(nameof(Index));
             }
-            return View(parkedVehicle);
+            else
+            {
+                if (!isUnique)
+                {
+                    ModelState.AddModelError("Registration", "A vehicle with this registration already exists.");
+                }
+            }
+                return View(parkedVehicle);
         }
 
         // GET: ParkedVehicles/Edit/5
@@ -156,6 +178,11 @@ namespace Garage.Controllers
         private bool ParkedVehicleExists(int id)
         {
             return _context.ParkedVehicle.Any(e => e.Id == id);
+        }
+
+        private bool ParkedVehicleIsUnique(string registration)
+        {
+            return !_context.ParkedVehicle.Any(e => e.Registration == registration);
         }
 
         private CreateOrEditViewModel GenerateCreateOrEditViewModel(ParkedVehicle parkedVehicle)

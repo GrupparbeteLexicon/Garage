@@ -22,6 +22,7 @@ namespace Garage.Models
 
             [Range(1, 16)]
             public int Wheels { get; set; }
-            public DateTime ParkTime { get; }
+
+            public DateTime ParkTime { get; set; }
     }
 }

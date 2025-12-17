@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage.Data;
 using Garage.Models;
+using Garage.ViewModels;
 
 namespace Garage.Controllers
 {
@@ -46,7 +47,12 @@ namespace Garage.Controllers
         // GET: ParkedVehicles/Create
         public IActionResult Create()
         {
-            return View();
+            ParkedVehicle parkedVehicle = new ParkedVehicle();
+            parkedVehicle.ParkTime = DateTime.Now;
+
+            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+
+            return View(viewModel);
         }
 
         // POST: ParkedVehicles/Create
@@ -74,11 +80,9 @@ namespace Garage.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
-            if (parkedVehicle == null)
-            {
-                return NotFound();
-            }
-            return View(parkedVehicle);
+            var viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+
+            return View(viewModel);
         }
 
         // POST: ParkedVehicles/Edit/5
@@ -152,6 +156,27 @@ namespace Garage.Controllers
         private bool ParkedVehicleExists(int id)
         {
             return _context.ParkedVehicle.Any(e => e.Id == id);
+        }
+
+        private CreateOrEditViewModel GenerateCreateOrEditViewModel(ParkedVehicle parkedVehicle)
+        {
+            var vehicleTypeList = Enum.GetValues(typeof(VehicleType))
+               .Cast<VehicleType>()
+               .Select(type => new SelectListItem
+               {
+                   Value = ((int)type).ToString(),
+                   Text = type.ToString()
+               })
+               .ToList();
+
+            var viewModel = new CreateOrEditViewModel
+            {
+                SelectedVehicleType = parkedVehicle.VehicleType,
+                VehicleTypeList = new SelectList(vehicleTypeList, "Value", "Text"),
+                ParkedVehicle = parkedVehicle
+            };
+
+            return viewModel;
         }
     }
 }

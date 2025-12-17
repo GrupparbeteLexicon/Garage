@@ -7,16 +7,18 @@
 <h1>List of Parked Vehicles</h1>
 
 <p>
-    <a asp-action="Create">Park a new Vehicle</a>
+    <a asp-action="Create" class="btn btn-primary">Park a new Vehicle</a>
 </p>
 
 <form method="get">
-    <input type="text" name="search" placeholder="Search registration..." value="@Context.Request.Query["search"]" />
-    <button type="submit" class="btn btn-primary">Search</button>
-    <a asp-action="Index"
-       class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")">
-        Clear
-    </a>
+    <div class="input-group w-50">
+        <input type="text" class="form-control" name="search" placeholder="Search registration..." value="@Context.Request.Query["search"]" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
+        <button type="submit" class="btn btn-primary" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>Search</button>
+        <a asp-action="Index"
+            class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")">
+            Clear
+        </a>
+    </div>
 </form>
 
 <table class="table">
@@ -64,5 +66,12 @@
 
 @if (!Model.Any())
 {
-    <p class="text-muted">No vehicles currently parked or matching your search.</p>
+    @if (string.IsNullOrWhiteSpace(ViewData["Search"] as string))
+    {
+        <p class="text-muted">No vehicles currently parked.</p>
+    }
+    else
+    {
+        <p class="text-muted">No vehicles matched your search.</p>
+    }
 }

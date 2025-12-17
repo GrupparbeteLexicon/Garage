@@ -9,6 +9,6 @@
             public string Brand { get; set; }
             public string Model { get; set; }
             public int Wheels { get; set; }
-            public DateTime ParkTime { get; set; }
+            public DateTime ParkTime { get; }
     }
 }

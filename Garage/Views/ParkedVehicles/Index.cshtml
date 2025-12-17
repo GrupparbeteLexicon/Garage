@@ -12,7 +12,8 @@
 
 <form method="get">
     <input type="text" name="search" placeholder="Search registration..." value="@Context.Request.Query["search"]" />
-    <button type="submit">Search</button>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <a asp-action="Index" class="btn btn-secondary"> Clear search</a>
 </form>
 
 <table class="table">

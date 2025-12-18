@@ -1,28 +1,42 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Garage.Models
+namespace Garage.Models;
+
+[Index(nameof(Registration), IsUnique = true)]
+public class ParkedVehicle
 {
-    [Index(nameof(Registration), IsUnique = true)]
-    public class ParkedVehicle
-    {
-            public int Id { get; set; }
-            public VehicleType VehicleType { get; set; }
+    public int Id { get; set; }
 
-            [StringLength(6)]
-            public string Registration { get; set; }
-            public string Color { get; set; }
+    [Display(Name = "Vehicle Type")]
+    public VehicleType VehicleType { get; set; }
 
-            [StringLength(30)]
-            public string Brand { get; set; }
+    [StringLength(6)]
+    [Display(Name = "Registration Number")]
+    public string Registration { get; set; }
+    
+    [StringLength(20)]
+    [Display(Name = "Color")]
+    public string Color { get; set; }
+    
+    [StringLength(20)]
+    [Display(Name = "Brand")]
+    public string Brand { get; set; }
+    
+    [StringLength(20)]
+    [Display(Name = "Model")]
+    public string Model { get; set; }
+    
+    [Range(1, 18)]
+    [Display(Name = "Number of Wheels")]
+    public int Wheels { get; set; }
 
-            [StringLength(30)]
-            public string Model { get; set; }
+    [Display(Name = "Parked Since")]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}")]
+    public DateTime ParkTime { get; set; } = DateTime.Now;
 
-            [Range(1, 16)]
-            public int Wheels { get; set; }
-
-            public DateTime ParkTime { get; set; }
-    }
+    [Display(Name = "Parked For")]
+    [NotMapped]
+    public TimeSpan ParkedDuration => DateTime.Now - ParkTime;
 }

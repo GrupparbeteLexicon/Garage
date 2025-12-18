@@ -58,63 +58,6 @@ namespace Garage.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ParkedVehicle");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Brand = "Volvo",
-                            Color = "Red",
-                            Model = "XC60",
-                            ParkTime = new DateTime(2025, 12, 17, 9, 30, 0, 0, DateTimeKind.Unspecified),
-                            Registration = "ABC123",
-                            VehicleType = 0,
-                            Wheels = 4
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Brand = "Yamaha",
-                            Color = "Black",
-                            Model = "MT-07",
-                            ParkTime = new DateTime(2025, 12, 17, 10, 15, 0, 0, DateTimeKind.Unspecified),
-                            Registration = "MOTO77",
-                            VehicleType = 1,
-                            Wheels = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Brand = "Polaris",
-                            Color = "Green",
-                            Model = "Sportsman",
-                            ParkTime = new DateTime(2025, 12, 17, 11, 0, 0, 0, DateTimeKind.Unspecified),
-                            Registration = "ATV999",
-                            VehicleType = 2,
-                            Wheels = 4
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Brand = "Scania",
-                            Color = "White",
-                            Model = "Citywide",
-                            ParkTime = new DateTime(2025, 12, 17, 8, 45, 0, 0, DateTimeKind.Unspecified),
-                            Registration = "BUS001",
-                            VehicleType = 3,
-                            Wheels = 6
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Brand = "MAN",
-                            Color = "Blue",
-                            Model = "TGX",
-                            ParkTime = new DateTime(2025, 12, 17, 7, 20, 0, 0, DateTimeKind.Unspecified),
-                            Registration = "TRK888",
-                            VehicleType = 4,
-                            Wheels = 8
-                        });
                 });
 #pragma warning restore 612, 618
         }

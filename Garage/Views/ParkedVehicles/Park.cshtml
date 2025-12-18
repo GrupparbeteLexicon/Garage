@@ -1,24 +1,20 @@
 ﻿@model Garage.ViewModels.CreateOrEditViewModel;
 
-@{
-    ViewData["Title"] = "Edit";
-}
 
-<h1>Edit</h1>
+
+<h1>Park</h1>
 
 <h4>ParkedVehicle</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Park">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ParkedVehicle.Id" />
             <div class="form-group">
-                <label asp-for="ParkedVehicle.VehicleType" class="control-label"></label>
+                <label asp-for="SelectedVehicleType" class="control-label"></label>
                 <select name="selectedVehicleType" asp-for="SelectedVehicleType" asp-items="Model.VehicleTypeList" class="form-select">
                     <option value="" selected disabled>--- Select vehicle Type ---</option>
                 </select>
-                <span asp-validation-for="ParkedVehicle.VehicleType" class="text-danger"></span>
                 <span asp-validation-for="ParkedVehicle.VehicleType" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -52,7 +48,7 @@
                 <span asp-validation-for="ParkedVehicle.ParkTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary my-3" />
+                <input type="submit" value="Park" class="btn btn-primary my-3" />
             </div>
         </form>
     </div>

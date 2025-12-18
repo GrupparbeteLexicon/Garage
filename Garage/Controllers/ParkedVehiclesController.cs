@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage.Data;
@@ -21,12 +17,6 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _context.ParkedVehicle.ToListAsync());
-        //}
-
-        // GET: ParkedVehicles
         public async Task<IActionResult> Index(string search)
         {
             var query = _context.ParkedVehicle.AsQueryable();
@@ -35,11 +25,12 @@ namespace Garage.Controllers
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(v =>
-                    v.Registration.Contains(search));
+                query = query.Where(v => v.Registration.Contains(search));
             }
 
-            var vehicles = await query.ToListAsync();
+            var vehicles = await query
+                .Select(v => new ParkingVehicleViewModel(v))
+                .ToListAsync();
             return View(vehicles);
         }
 
@@ -58,7 +49,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            return View(parkedVehicle);
+            return View(new ParkingVehicleViewModel(parkedVehicle));
         }
 
         // GET: ParkedVehicles/Park
@@ -177,7 +168,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            return View(parkedVehicle);
+            return View(new ParkingVehicleViewModel(parkedVehicle));
         }
 
         // POST: ParkedVehicles/Unpark/5

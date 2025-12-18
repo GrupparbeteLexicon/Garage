@@ -8,7 +8,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Park">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="SelectedVehicleType" class="control-label"></label>
@@ -48,7 +48,7 @@
                 <span asp-validation-for="ParkedVehicle.ParkTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary my-3" />
+                <input type="submit" value="Park" class="btn btn-primary my-3" />
             </div>
         </form>
     </div>

@@ -61,7 +61,8 @@ namespace Garage.Controllers
             return View(parkedVehicle);
         }
 
-        // GET: ParkedVehicles/Create
+        // GET: ParkedVehicles/Park
+        [HttpGet, ActionName("Park")]
         public IActionResult Create()
         {
             ParkedVehicle parkedVehicle = new ParkedVehicle();
@@ -72,10 +73,10 @@ namespace Garage.Controllers
             return View(viewModel);
         }
 
-        // POST: ParkedVehicles/Create
+        // POST: ParkedVehicles/Park
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Park")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
         {
@@ -160,7 +161,8 @@ namespace Garage.Controllers
             return View(viewModel);
         }
 
-        // GET: ParkedVehicles/Delete/5
+        // GET: ParkedVehicles/Unpark/5
+        [HttpGet, ActionName("Unpark")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -178,8 +180,8 @@ namespace Garage.Controllers
             return View(parkedVehicle);
         }
 
-        // POST: ParkedVehicles/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: ParkedVehicles/Unpark/5
+        [HttpPost, ActionName("Unpark")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

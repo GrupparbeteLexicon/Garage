@@ -28,7 +28,6 @@ namespace Garage.Controllers
                 query = query.Where(v => v.Registration.Contains(search));
             }
 
-            //var vehicles = await query.ToListAsync();
             var vehicles = await query
                 .Select(v => new ParkingVehicleViewModel(v))
                 .ToListAsync();

@@ -1,3 +1,11 @@
+:root {
+    --bs-primary: #0dcaf0; /* same as --bs-info color */
+}
+
+[data-bs-theme="light"] {
+    --bs-primary: #0dcaf0;
+}
+
 html, body {
     height: 100%;
 }
@@ -11,7 +19,7 @@ body {
 }
 
 main {
-    flex: 1 0 auto; 
+    flex: 1 0 auto;
 }
 
 footer {
@@ -25,6 +33,24 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 600;
+}
+
+/* Customisations */
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-outline-primary {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+    color: white !important;
+}
+
+.alert-primary {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+    color: white !important;
 }
 
 .garage-icon {

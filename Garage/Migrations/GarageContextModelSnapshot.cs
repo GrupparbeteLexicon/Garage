@@ -32,7 +32,8 @@ namespace Garage.Migrations
 
                     b.Property<string>("Brand")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Color")
                         .IsRequired()
@@ -40,14 +41,16 @@ namespace Garage.Migrations
 
                     b.Property<string>("Model")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("ParkTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Registration")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<int>("VehicleType")
                         .HasColumnType("int");
@@ -56,6 +59,9 @@ namespace Garage.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Registration")
+                        .IsUnique();
 
                     b.ToTable("ParkedVehicle");
 

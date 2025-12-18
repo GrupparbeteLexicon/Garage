@@ -61,7 +61,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar-brand:hover .garage-icon {
-    filter: drop-shadow(0 0 4px rgba(13, 110, 253, 0.8)) drop-shadow(0 0 8px rgba(13, 110, 253, 0.6));
+    filter: drop-shadow(0 0 4px var(--bs-primary)) drop-shadow(0 0 8px var(--bs-primary));
     transform: scale(1.05);
 }
 

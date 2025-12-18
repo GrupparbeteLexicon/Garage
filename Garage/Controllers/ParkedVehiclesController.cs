@@ -28,7 +28,10 @@ namespace Garage.Controllers
                 query = query.Where(v => v.Registration.Contains(search));
             }
 
-            var vehicles = await query.ToListAsync();
+            //var vehicles = await query.ToListAsync();
+            var vehicles = await query
+                .Select(v => new ParkingVehicleViewModel(v))
+                .ToListAsync();
             return View(vehicles);
         }
 
@@ -47,7 +50,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            return View(parkedVehicle);
+            return View(new ParkingVehicleViewModel(parkedVehicle));
         }
 
         // GET: ParkedVehicles/Park
@@ -166,7 +169,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            return View(parkedVehicle);
+            return View(new ParkingVehicleViewModel(parkedVehicle));
         }
 
         // POST: ParkedVehicles/Unpark/5

@@ -1,71 +1,77 @@
 ﻿@model IEnumerable<Garage.Models.ParkedVehicle>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "List of Parked Vehicles";
 }
 
-<h1>Index</h1>
+<h1>List of Parked Vehicles</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Park a new Vehicle</a>
 </p>
-<table class="table">
+
+<form method="get">
+    <div class="input-group w-50">
+        <input type="text" class="form-control" name="search" placeholder="Search registration..." value="@Context.Request.Query["search"]" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
+        <button type="submit" class="btn btn-primary" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>Search</button>
+        <a asp-action="Index"
+            class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")">
+            Clear
+        </a>
+    </div>
+</form>
+
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.VehicleType)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.Registration)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Color)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Model)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Wheels)
-            </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.ParkTime)
             </th>
-            <th></th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.ParkedDuration)
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.VehicleType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Registration)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Color)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Model)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Wheels)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParkTime)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VehicleType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Registration)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParkTime)
+                </td>
+                <td>
+                    @string.Format("{0:D2}h, {1:D2}m", (int)item.ParkedDuration.TotalHours, item.ParkedDuration.Minutes)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Unpark</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@if (!Model.Any())
+{
+    @if (string.IsNullOrWhiteSpace(ViewData["Search"] as string))
+    {
+        <p class="text-muted">No vehicles currently parked.</p>
+    }
+    else
+    {
+        <p class="text-muted">No vehicles matched your search.</p>
+    }
+}

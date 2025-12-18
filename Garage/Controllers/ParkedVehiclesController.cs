@@ -20,9 +20,26 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.ParkedVehicle.ToListAsync());
+        //}
+
+        // GET: ParkedVehicles
+        public async Task<IActionResult> Index(string search)
         {
-            return View(await _context.ParkedVehicle.ToListAsync());
+            var query = _context.ParkedVehicle.AsQueryable();
+
+            ViewData["Search"] = search;
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(v =>
+                    v.Registration.Contains(search));
+            }
+
+            var vehicles = await query.ToListAsync();
+            return View(vehicles);
         }
 
         // GET: ParkedVehicles/Details/5

@@ -111,6 +111,7 @@ namespace Garage.Controllers
 
             var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
             var viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+            viewModel.DisableEditParkTime = true;
 
             return View(viewModel);
         }
@@ -120,7 +121,7 @@ namespace Garage.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Edit(int id, ParkedVehicle parkedVehicle)
         {
            if (id != parkedVehicle.Id)
             {
@@ -131,7 +132,20 @@ namespace Garage.Controllers
             {
                 try
                 {
-                    _context.Update(parkedVehicle);
+                    // the ParkTime field is disabled, so parkedVehicle.ParkTime here has DateTime.Now (defualt), not the old correct date
+                    // even if we don't bind ParkTime, the date still resets to default...
+                    // so we ignore that field on save and make sure that the disabled field doesnt reset to default
+
+                    _context.ParkedVehicle
+                        .Where(p => p.Id == parkedVehicle.Id)
+                        .ExecuteUpdate(setters => setters
+                            .SetProperty(p => p.VehicleType, parkedVehicle.VehicleType)
+                            .SetProperty(p => p.Registration, parkedVehicle.Registration)
+                            .SetProperty(p => p.Color, parkedVehicle.Color)
+                            .SetProperty(p => p.Brand, parkedVehicle.Brand)
+                            .SetProperty(p => p.Model, parkedVehicle.Model)
+                            .SetProperty(p => p.Wheels, parkedVehicle.Wheels));
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

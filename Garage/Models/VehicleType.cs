@@ -16,5 +16,11 @@ public enum VehicleType {
     BUS,
 
     [Display(Name = "Truck")]
-    TRUCK 
+    TRUCK,
+
+    [Display(Name = "Airplane")]
+    AIRPLANE,
+
+    [Display(Name = "Boat")]
+    BOAT
 }

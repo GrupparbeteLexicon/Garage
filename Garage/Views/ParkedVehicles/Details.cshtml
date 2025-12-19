@@ -5,9 +5,47 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+@* <h1>Details</h1> *@
 
-<div>
+<div class="card shadow-sm my-4" style="max-width: 600px; margin:auto;">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Vehicle Details</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-3">
+            <dt class="col-sm-4">Registration</dt>
+            <dd class="col-sm-8 text-uppercase">@Model.Registration</dd>
+
+            <dt class="col-sm-4">Type</dt>
+            <dd class="col-sm-8"><span class="badge badge-pill bg-dark text-light">@Model.VehicleType</span></dd>
+
+            <dt class="col-sm-4">Brand / Model</dt>
+            <dd class="col-sm-8">@Model.Brand @Model.Model</dd>
+
+            <dt class="col-sm-4">Color</dt>
+            <dd class="col-sm-8">@Model.Color</dd>
+
+            <dt class="col-sm-4">Wheels</dt>
+            <dd class="col-sm-8">@Model.Wheels</dd>
+
+            <dt class="col-sm-4">Parked At</dt>
+            <dd class="col-sm-8">@Model.ParkTime</dd>
+
+            <dt class="col-sm-4">Duration</dt>
+            <dd class="col-sm-8">
+                <span class="badge badge-pill bg-info text-dark">@Model.ParkedDuration.ParkedDurationString()</span>
+            </dd>
+        </dl>
+
+        <a asp-action="Unpark" asp-route-id="@Model?.Id" class="btn btn-success">Checkout</a>
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Edit</a>
+    </div>
+    <div class="card-footer text-muted text-center">
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+@* <div>
     <h4>ParkedVehicle</h4>
     <hr />
     <dl class="row">
@@ -63,8 +101,8 @@
         </dd>
     </dl>
     <a asp-action="Unpark" asp-route-id="@Model?.Id" class="btn btn-primary">Checkout</a>
-</div>
-<div class="mt-4">
+</div> *@
+@* <div class="mt-4">
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
-</div>
+</div> *@

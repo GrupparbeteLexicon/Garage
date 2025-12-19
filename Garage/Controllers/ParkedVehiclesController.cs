@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Garage.Data;
+﻿using Garage.Data;
 using Garage.Models;
 using Garage.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using static Garage.Extensions.CountPlacesExtension;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Garage.Controllers
 {
@@ -59,7 +61,12 @@ namespace Garage.Controllers
             ParkedVehicle parkedVehicle = new ParkedVehicle();
             parkedVehicle.ParkTime = DateTime.Now;
 
+            var query = _context.ParkedVehicle.AsQueryable();
+            float placesUsed = CountPlaces(query);
+            bool garageIsFull = placesUsed > Capacity;
+
             CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+            viewModel.GarageIsFull = garageIsFull;
 
             return View(viewModel);
         }

@@ -4,23 +4,41 @@
 
 <h1>Park</h1>
 
-<h4>ParkedVehicle</h4>
+<h4>Parking new vehicle</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Park">
-            <partial name="_VehicleForm" model="Model" />
-            <div class="form-group">
-                <input type="submit" value="Park" class="btn btn-primary my-3" />
-            </div>
-        </form>
+
+@if (Model.GarageIsFull)
+{
+    // should not be able to get here normally, but bookmarks exist
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+            <use xlink:href="#exclamation-triangle-fill" />
+        </svg>
+        <div>
+            Can't park vehicles: no available spots.
+        </div>
     </div>
-</div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Park">
+                <partial name="_VehicleForm" model="Model" />
+                <div class="form-group">
+                    <input type="submit" value="Park" class="btn btn-primary my-3" />
+                </div>
+            </form>
+        </div>
+    </div>
+}
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

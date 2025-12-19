@@ -15,7 +15,7 @@
             <input type="hidden" asp-for="ParkedVehicle.Id" />
             <div class="form-group">
                 <label asp-for="ParkedVehicle.VehicleType" class="control-label"></label>
-                <select name="selectedVehicleType" asp-for="SelectedVehicleType" asp-items="Model.VehicleTypeList" class="form-select">
+                <select asp-for="ParkedVehicle.VehicleType" asp-items="Model.VehicleTypeList" class="form-select">
                     <option value="" selected disabled>--- Select vehicle Type ---</option>
                 </select>
                 <span asp-validation-for="ParkedVehicle.VehicleType" class="text-danger"></span>

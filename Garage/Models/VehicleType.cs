@@ -12,8 +12,8 @@ public enum VehicleType {
     [Display(Name = "ATV")]
     ATV,
 
-    [Display(Name = "Buss")]
-    BUSS,
+    [Display(Name = "Bus")]
+    BUS,
 
     [Display(Name = "Truck")]
     TRUCK 

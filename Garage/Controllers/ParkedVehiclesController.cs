@@ -19,7 +19,7 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index(string search)
+        public async Task<IActionResult> Index(string search, VehicleType? type)
         {
             var query = _context.ParkedVehicle.AsQueryable();
 
@@ -28,6 +28,10 @@ namespace Garage.Controllers
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(v => v.Registration.Contains(search));
+            }
+            if (type != null)
+            {
+                query = query.Where(v => v.VehicleType == type);
             }
 
             var vehicles = await query

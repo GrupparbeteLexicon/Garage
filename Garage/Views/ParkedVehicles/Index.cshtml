@@ -58,7 +58,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.VehicleType)
+                    <i class="bi @item.VehicleType.ToIconClass() me-1">  @Html.DisplayFor(modelItem => item.VehicleType)</i>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Registration)

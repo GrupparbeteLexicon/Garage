@@ -15,7 +15,7 @@
     <header>
         <nav class="navbar navbar-expand-lg" style="background-color: #0d1b2a; min-height: 80px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
             <div class="container">
-                <a class="navbar-brand fw-bold fs-3 text-white" asp-area="" asp-controller="Home" asp-action="Index">Garage</a>
+                <a class="navbar-brand fw-bold fs-3 text-white" asp-area="" asp-controller="Home" asp-action="Index">Garage/grupp 1</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                         aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -34,14 +34,41 @@
         </nav>
     </header>
 
-
+    <!-- debug info
+    <p >
+        @ViewContext.RouteData.Values["controller"] /
+        @ViewContext.RouteData.Values["action"]
+    </p>
+    -->
 
 
     <!-- Main Content -->
-    <main class="flex-grow-1">
+    <main class="flex-grow-1 page-bg">
         <div class="container py-5">
+            <!-- Floor card -->
+            @if ((ViewContext.RouteData.Values["controller"]?.ToString() == "Home"
+                && ViewContext.RouteData.Values["action"]?.ToString() == "Index"))
+            {
+            <div class="vehicle-grid">
+                <a asp-controller="ParkedVehicles"
+                   asp-action="Index"
+                   class="vehicle-tile text-decoration-none text-dark">
+
+                    <div class="tile-header">
+                            <h5>Aimo Park | Tomtebogatan</h5>
+                            <span class="badge">Aimo Park </span>
+                    </div>
+
+                    <div class="tile-body">
+                            113 39 Stockholm / Tomtebogatan 1
+                    </div>
+
+                </a>
+            </div>
+            }
             @RenderBody()
         </div>
+        
     </main>
 
     <!-- Footer -->

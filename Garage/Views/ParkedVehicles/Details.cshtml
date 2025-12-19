@@ -1,63 +1,101 @@
 ﻿@model Garage.Models.ParkedVehicle
 
-@{
-    ViewData["Title"] = "Details";
-}
+<div class="park-form-card">
 
-<h1>Details</h1>
+    <h3 class="mb-2 fw-bold">Vehicle Details</h3>
+    <p class="text-muted mb-3">Information about this parked vehicle</p>
 
-<div>
-    <h4>ParkedVehicle</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Registration)
-        </dt>
-        <dd class="col-sm-10">
-            <span class="text-uppercase">
-            @Html.DisplayFor(model => model.Registration)
-            </span>
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VehicleType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VehicleType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Color)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Color)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Wheels)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Wheels)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ParkTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ParkTime)
-        </dd>
-    </dl>
-    <a asp-action="Unpark" asp-route-id="@Model?.Id" class="btn btn-info">Checkout</a>
-</div>
-<div class="mt-4">
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+    <div class="row">
+
+        <!-- LEFT: future photo -->
+        <div class="col-md-4 mb-4 d-flex flex-column align-items-center justify-content-start">
+            <div class="vehicle-photo-box">
+                <span class="placeholder-text">
+                    Vehicle Photo<br />
+                    (coming soon)
+                </span>
+            </div>
+        </div>
+
+
+        <!-- RIGHT: details -->
+        <div class="col-md-8">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="detail-label">Vehicle Type</label>
+                    <div class="detail-value">
+                        @Model.VehicleType
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="detail-label">Registration</label>
+                    <div class="detail-value text-uppercase">
+                        @Model.Registration
+                    </div>
+                </div>
+
+                
+
+                <div class="col-md-6 mb-3">
+                    <label class="detail-label">Color</label>
+                    <div class="detail-value">
+                        @Model.Color
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="detail-label">Brand</label>
+                    <div class="detail-value">
+                        @Model.Brand
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="detail-label">Model</label>
+                    <div class="detail-value">
+                        @Model.Model
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="detail-label">Number of Wheels</label>
+                    <div class="detail-value">
+                        @Model.Wheels
+                    </div>
+                </div>
+
+                <div class="col-12 mb-3">
+                    <label class="detail-label">Parked Since</label>
+                    <div class="detail-value">
+                        @Model.ParkTime
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex justify-content-between mt-3">
+
+        <a asp-action="Index" class="btn btn-dark-glass">
+            Back
+        </a>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-dark-glass">
+                Edit
+            </a>
+
+            <a asp-action="Unpark" asp-route-id="@Model.Id" class="btn btn-dark-glass">
+                Checkout
+            </a>
+        </div>
+
+    </div>
+
 </div>

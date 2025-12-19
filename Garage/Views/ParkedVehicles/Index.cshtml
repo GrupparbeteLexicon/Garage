@@ -4,7 +4,7 @@
     ViewData["Title"] = "List of Parked Vehicles";
 }
 
-<h1>List of Parked Vehicles</h1>
+@* <h1>List of Parked Vehicles</h1>
 
 <p>
     <a asp-action="Park" class="btn btn-primary">Park a new Vehicle</a>
@@ -20,7 +20,71 @@
         </a>
     </div>
 </form>
+*@
 
+<div class="d-flex flex-wrap gap-3 align-items-center mb-4 justify-content-between">
+
+    <!-- Back Button -->
+    <a asp-action="Index" asp-controller="Home" class="btn btn-dark-glass">
+        ← Back
+    </a>
+
+    <!-- Search -->
+    <form method="get" class="flex-grow-1">
+        <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   name="search"
+                   placeholder="Search registration..."
+                   value="@Context.Request.Query["search"]">
+
+            <button type="submit" class="btn btn-dark-glass">
+                Search
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-dark-glass">
+                Clear
+            </a>
+        </div>
+    </form>
+
+    <!-- Add Vehicle -->
+    <a asp-action="Park" class="btn btn-dark-glass">
+        + Park a new Vehicle
+    </a>
+
+</div>
+
+<div class="vehicle-grid">
+        @foreach (var item in Model)
+        {
+            <div class="vehicle-tile">
+                <div class="tile-header">
+                    <h5>@item.VehicleType</h5>
+                    <span class="badge">
+                        @string.Format("{0:D2}h {1:D2}m",
+                        (int)item.ParkedDuration.TotalHours,
+                                item.ParkedDuration.Minutes)
+            </span>
+        </div>
+
+        <div class="tile-body">
+            <div><strong>Registration:</strong> @item.Registration</div>
+            <div><strong>Parked since:</strong> @item.ParkTime</div>
+        </div>
+
+        <div class="tile-actions">
+            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+            <a asp-action="Unpark" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Unpark</a>
+        </div>
+    </div>
+        }
+</div>
+
+
+@* 
 <table class="table table-striped">
     <thead>
         <tr>
@@ -62,8 +126,8 @@
             </tr>
         }
     </tbody>
-</table>
-
+</table> *@
+@*
 @if (!Model.Any())
 {
     @if (string.IsNullOrWhiteSpace(ViewData["Search"] as string))
@@ -74,4 +138,49 @@
     {
         <p class="text-muted">No vehicles matched your search.</p>
     }
+}
+*@
+
+@if (!Model.Any() && !string.IsNullOrWhiteSpace(ViewData["Search"] as string))
+{
+    <div class="empty-overlay">
+        <div class="empty-modal-box">
+            <h3 class="fw-bold mb-2">Nothing found</h3>
+
+            <p class="text-muted mb-4">
+                No vehicles matched your search request.
+            </p>
+
+            <form asp-action="Index">
+                <button class="btn btn-dark px-4 py-2" style="border-radius: 12px;">
+                    OK
+                </button>
+            </form>
+        </div>
+    </div>
+}
+@if (!Model.Any() && !string.IsNullOrWhiteSpace(ViewData["Search"] as string))
+{
+    <div class="empty-modal">
+        <div class="empty-card">
+            <h3 class="fw-bold">Nothing found</h3>
+            <p class="text-muted">
+                No vehicles matched your search request.
+            </p>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index"
+                   class="btn btn-dark px-4 py-2"
+                   style="border-radius: 12px;">
+                    ← Back
+                </a>
+
+                <a asp-action="Park"
+                   class="btn btn-primary px-4 py-2"
+                   style="border-radius: 12px;">
+                    + Park a Vehicle
+                </a>
+            </div>
+        </div>
+    </div>
 }

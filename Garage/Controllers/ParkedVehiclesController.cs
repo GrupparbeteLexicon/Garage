@@ -67,6 +67,7 @@ namespace Garage.Controllers
 
             CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             viewModel.GarageIsFull = garageIsFull;
+            viewModel.DisableEditParkTime = true;
 
             return View(viewModel);
         }
@@ -92,6 +93,18 @@ namespace Garage.Controllers
                 _context.Add(parkedVehicle);
                 try
                 {
+                    _context.ParkedVehicle
+                        .Where(p => p.Id == parkedVehicle.Id)
+                        .ExecuteUpdate(setters => setters
+                            .SetProperty(p => p.VehicleType, parkedVehicle.VehicleType)
+                            .SetProperty(p => p.Registration, parkedVehicle.Registration.ToUpper())
+                            .SetProperty(p => p.Color, parkedVehicle.Color)
+                            .SetProperty(p => p.Brand, parkedVehicle.Brand)
+                            .SetProperty(p => p.Model, parkedVehicle.Model)
+                            .SetProperty(p => p.Wheels, parkedVehicle.Wheels)
+                            .SetProperty(p => p.ParkTime, DateTime.Now));
+
+
                     await _context.SaveChangesAsync();
                 } catch (DbUpdateException ex)
                 {
@@ -155,7 +168,7 @@ namespace Garage.Controllers
                         .Where(p => p.Id == parkedVehicle.Id)
                         .ExecuteUpdate(setters => setters
                             .SetProperty(p => p.VehicleType, parkedVehicle.VehicleType)
-                            .SetProperty(p => p.Registration, parkedVehicle.Registration)
+                            .SetProperty(p => p.Registration, parkedVehicle.Registration.ToUpper())
                             .SetProperty(p => p.Color, parkedVehicle.Color)
                             .SetProperty(p => p.Brand, parkedVehicle.Brand)
                             .SetProperty(p => p.Model, parkedVehicle.Model)

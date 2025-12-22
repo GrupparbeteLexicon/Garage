@@ -39,6 +39,25 @@ namespace Garage.Controllers
             return View();
         }
 
+        public IActionResult Statistics()
+        {
+            ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
+            {
+                Capacity = (int)Capacity,
+                Count = _context.ParkedVehicle.Count(),
+                HourlyRate = HourlyRate, // TODO: Move to configuration or database
+                Currency = Currency, // TODO: Move to configuration or database
+                TotalParkedTime = _context.ParkedVehicle
+                    .Select(s => DateTime.Now - s.ParkTime)
+                    .ToList()
+                    .Sum(s => (decimal)s.TotalHours),
+                VehicleTypeCounts = _context.ParkedVehicle
+                    .GroupBy(v => v.VehicleType)
+                    .ToDictionary(g => g.Key, g => g.Count()),
+            };
+            return View(model);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

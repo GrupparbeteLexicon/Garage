@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using static Garage.Extensions.CountPlacesExtension;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Garage.Controllers
 {
@@ -46,17 +45,23 @@ namespace Garage.Controllers
         public IActionResult Statistics()
         {
             float count = CountPlaces(_context.ParkedVehicle.AsQueryable());
+            DateTime now = DateTime.Now;
             ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
             {
+                
                 Capacity = (int)CountPlacesExtension.Capacity,
                 PlacesUsed = (int)Math.Ceiling(count), // show whole places used
                 PlacesLeft = ToMixedFraction(CountPlacesExtension.Capacity - count),
-                HourlyRate = CountPlacesExtension.HourlyRate, // TODO: Move to configuration or database
-                Currency = CountPlacesExtension.Currency, // TODO: Move to configuration or database
+                HourlyRate = PriceExtentions.HourlyRate, // TODO: Move to configuration or database
+                Currency = PriceExtentions.Currency, // TODO: Move to configuration or database
                 TotalParkedTime = _context.ParkedVehicle
-                    .Select(s => DateTime.Now - s.ParkTime)
+                    .Select(s => now - s.ParkTime)
                     .ToList()
                     .Sum(s => (decimal)s.TotalHours),
+                TotalRevenue = _context.ParkedVehicle
+                    .Select(s => (now - s.ParkTime).ParkedTimeToPrice())
+                    .ToList()
+                    .Sum(s => s),
                 VehicleTypeCounts = _context.ParkedVehicle
                     .GroupBy(v => v.VehicleType)
                     .ToDictionary(g => g.Key.GetDisplayName(), g => g.Count()),
@@ -257,21 +262,21 @@ namespace Garage.Controllers
                 DateTime now = DateTime.Now;
                 TimeSpan totalParkedTime = now - parkedVehicle.ParkTime;
 
-                var kvitto = new KvittoViewModel
+                var receipt = new ReceiptViewModel
                 {
                     Registration = parkedVehicle.Registration,
                     VehicleType = parkedVehicle.VehicleType,
                     ParkTime = parkedVehicle.ParkTime,
-                    LeaveTime = DateTime.Now,
+                    LeaveTime = now,
                     TotalParkedTime = totalParkedTime,
-                    TotalPrice = HourlyRate * (decimal)totalParkedTime.TotalHours,
-                    Currency = Currency
+                    TotalPrice = PriceExtentions.CalculateCost(totalParkedTime),
+                    Currency = PriceExtentions.Currency
                 };
 
                 _context.ParkedVehicle.Remove(parkedVehicle);
 
                 await _context.SaveChangesAsync();
-                return View("~/Views/Kvitto/Index.cshtml", kvitto);
+                return View("Receipt", receipt);
             }
 
             return RedirectToAction(nameof(Index));

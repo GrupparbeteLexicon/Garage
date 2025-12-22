@@ -10,5 +10,6 @@ public class ParkingStatisticsViewModel
     public string Currency { get; set; }
     public decimal HourlyRate { get; set; }
     public decimal TotalParkedTime { get; set; }
+    public decimal TotalRevenue { get; set; }
     public Dictionary<string, int> VehicleTypeCounts { get; set; }
 }

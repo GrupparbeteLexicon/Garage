@@ -90,20 +90,18 @@ namespace Garage.Controllers
 
             if (ModelState.IsValid && isUnique)
             {
-                _context.Add(parkedVehicle);
-                try
+               try
                 {
-                    _context.ParkedVehicle
-                        .Where(p => p.Id == parkedVehicle.Id)
-                        .ExecuteUpdate(setters => setters
-                            .SetProperty(p => p.VehicleType, parkedVehicle.VehicleType)
-                            .SetProperty(p => p.Registration, parkedVehicle.Registration.ToUpper())
-                            .SetProperty(p => p.Color, parkedVehicle.Color)
-                            .SetProperty(p => p.Brand, parkedVehicle.Brand)
-                            .SetProperty(p => p.Model, parkedVehicle.Model)
-                            .SetProperty(p => p.Wheels, parkedVehicle.Wheels)
-                            .SetProperty(p => p.ParkTime, DateTime.Now));
-
+                    _context.Add(new ParkedVehicle
+                    {
+                        VehicleType = parkedVehicle.VehicleType,
+                        Registration = parkedVehicle.Registration.ToUpper(),
+                        Color = parkedVehicle.Color,
+                        Brand = parkedVehicle.Brand,
+                        Model = parkedVehicle.Model,
+                        Wheels = parkedVehicle.Wheels,
+                        ParkTime = DateTime.Now
+                    });
 
                     await _context.SaveChangesAsync();
                 } catch (DbUpdateException ex)

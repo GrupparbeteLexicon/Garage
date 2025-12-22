@@ -2,7 +2,7 @@
 
 namespace Garage.ViewModels
 {
-    public class KvittoViewModel
+    public class ReceiptViewModel
     {
         public string Registration { get; set; } = string.Empty;
         public VehicleType VehicleType { get; set; }

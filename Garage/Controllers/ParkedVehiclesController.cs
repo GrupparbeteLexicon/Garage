@@ -257,7 +257,7 @@ namespace Garage.Controllers
                 DateTime now = DateTime.Now;
                 TimeSpan totalParkedTime = now - parkedVehicle.ParkTime;
 
-                var kvitto = new KvittoViewModel
+                var receipt = new ReceiptViewModel
                 {
                     Registration = parkedVehicle.Registration,
                     VehicleType = parkedVehicle.VehicleType,
@@ -271,7 +271,7 @@ namespace Garage.Controllers
                 _context.ParkedVehicle.Remove(parkedVehicle);
 
                 await _context.SaveChangesAsync();
-                return View("~/Views/Kvitto/Index.cshtml", kvitto);
+                return View("Receipt", receipt);
             }
 
             return RedirectToAction(nameof(Index));
@@ -299,6 +299,11 @@ namespace Garage.Controllers
             };
 
             return viewModel;
+        }
+        [HttpPost, ActionName("Receipt")]
+        public async Task<IActionResult> Receipt()
+        {
+            return View();
         }
     }
 }

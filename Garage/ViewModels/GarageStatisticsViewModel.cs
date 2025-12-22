@@ -11,10 +11,8 @@ namespace Garage.ViewModels
         public Dictionary<VehicleType, int> VehiclesByType { get; set; }
             = new();
 
-        // NEW
         public int TotalWheels { get; set; }
 
-        // NEW
         public TimeSpan TotalParkedTime { get; set; }
 
     }

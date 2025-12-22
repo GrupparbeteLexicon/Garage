@@ -216,7 +216,7 @@ namespace Garage.Controllers
 
             return viewModel;
         }
-
+        [HttpGet, ActionName("Statistics")]
         public async Task<IActionResult> GarageStatistics()
         {
             var now = DateTime.Now;

@@ -125,7 +125,7 @@ namespace Garage.Controllers
 
             if (ModelState.IsValid && isUnique)
             {
-               try
+                try
                 {
                     _context.Add(new ParkedVehicle
                     {
@@ -210,18 +210,16 @@ namespace Garage.Controllers
 
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
                     if (!ParkedVehicleExists(parkedVehicle.Id))
                     {
 						TempData["ErrorMessage"] = $"Vehicle not found";
 						return NotFound();
                     }
-                    else
-                    {
-						TempData["ErrorMessage"] = $"Something went wrong, contact us for more information";
-						throw;
-                    }
+
+                    TempData["ErrorMessage"] = $"Could not edit vehicle.";
+                    return RedirectToAction(nameof(Index));
                 }
 
 				TempData["SuccessMessage"] = $"Vehicle edited successfully!";

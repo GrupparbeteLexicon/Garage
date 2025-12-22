@@ -1,3 +1,11 @@
+:root {
+    --bs-primary: #0dcaf0; /* same as --bs-info color */
+}
+
+[data-bs-theme="light"] {
+    --bs-primary: #0dcaf0;
+}
+
 html, body {
     height: 100%;
 }
@@ -11,7 +19,7 @@ body {
 }
 
 main {
-    flex: 1 0 auto; 
+    flex: 1 0 auto;
 }
 
 footer {
@@ -25,4 +33,102 @@ body {
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 600;
+}
+
+/* Customisations */
+
+.bg-primary {
+    background-color: var(--bs-primary) !important;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-outline-primary {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+    color: white !important;
+}
+
+.alert-primary {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+    color: white !important;
+}
+
+.garage-icon {
+    width: 30px;
+    height: 30px;
+    fill: white;
+    transition: filter 0.25s ease, transform 0.25s ease;
+}
+
+.navbar-brand:hover .garage-icon {
+    filter: drop-shadow(0 0 4px var(--bs-primary)) drop-shadow(0 0 8px var(--bs-primary));
+    transform: scale(1.05);
+}
+
+.navbar-custom {
+    background-color: #0d1b2a;
+    min-height: 80px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.footer-custom {
+    background-color: #0d1b2a;
+    color: #ffffff;
+}
+
+.receipt {
+    width: 280px; /* classic receipt width */
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    color: #000;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    border: 1px dashed #ccc;
+}
+
+.receipt-header {
+    text-align: center;
+}
+
+.receipt-logo {
+    width: 40px;
+    margin-bottom: 0.5rem;
+}
+
+.receipt-header h1 {
+    font-size: 20px;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.receipt-subtitle {
+    font-size: 12px;
+    margin: 0.25rem 0 0.5rem;
+}
+
+.receipt-divider {
+    text-align: center;
+    margin: 0.75rem 0;
+}
+
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.25rem 0;
+
+    & > label {
+        font-weight: bolder;
+    }
+}
+
+.receipt-footer {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 1rem;
 }

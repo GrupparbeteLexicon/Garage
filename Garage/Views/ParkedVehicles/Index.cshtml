@@ -1,29 +1,63 @@
-﻿@model IEnumerable<Garage.Models.ParkedVehicle>
+﻿@using Garage.Extensions
+@model IEnumerable<Garage.ViewModels.ParkingVehicleViewModel>;
 
 @{
-    ViewData["Title"] = "List of Parked Vehicles";
+    ViewData["Title"] = "Parked Vehicles";
 }
 
-<h1>List of Parked Vehicles</h1>
+<h1>Parked Vehicles</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Park a new Vehicle</a>
-</p>
+<div class="d-flex flex-column gap-2">
+    <div class="d-flex flex-column flex-md-row align-items-center gap-2">
 
-<form method="get">
-    <div class="input-group w-50">
-        <input type="text" class="form-control" name="search" placeholder="Search registration..." value="@Context.Request.Query["search"]" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
-        <button type="submit" class="btn btn-primary" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>Search</button>
-        <a asp-action="Index"
-            class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")">
-            Clear
-        </a>
+        @if (CountPlacesExtension.CountPlaces(Model) > CountPlacesExtension.Capacity)
+        {
+            <button class="btn btn-danger" disabled>
+                Can't park vehicles
+            </button>
+        }
+        else
+        {
+            <a asp-action="Park" class="btn btn-primary">
+                Park a new Vehicle
+            </a>
+        }
+
+        <!-- Search form -->
+        <form class="d-flex w-50 ms-auto" method="get">
+            <!-- Här la vi till ms-auto -->
+            <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       name="search"
+                       placeholder="Search registration..."
+                       value="@Context.Request.Query["search"]"
+                       @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
+
+                <button type="submit"
+                        class="btn btn-primary"
+                        @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>
+                    Search
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) && ViewData["Type"] == null ? "disabled" : "")">
+                    Clear
+                </a>
+            </div>
+        </form>
+
     </div>
-</form>
 
-<table class="table table-striped">
+
+    @Html.Partial("~/Views/Partials/Validation.cshtml")
+
+</div>
+
+<table class="table table-striped my-5">
     <thead>
         <tr>
+            @*<th scope="col">Name</th>*@
             <th scope="col">
                 @Html.DisplayNameFor(model => model.VehicleType)
             </th>
@@ -42,6 +76,12 @@
         @foreach (var item in Model)
         {
             <tr>
+                @*
+                <td>
+                    @Html.DisplayFor(modelItem => item.Brand)
+                    @Html.DisplayFor(modelItem => item.Model)
+                </td>
+                *@
                 <td>
                     @Html.DisplayFor(modelItem => item.VehicleType)
                 </td>
@@ -52,12 +92,12 @@
                     @Html.DisplayFor(modelItem => item.ParkTime)
                 </td>
                 <td>
-                    @string.Format("{0:D2}h, {1:D2}m", (int)item.ParkedDuration.TotalHours, item.ParkedDuration.Minutes)
+                    @item.ParkedDuration.ParkedDurationString()
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Unpark</a>
+                    <a asp-action="Unpark" asp-route-id="@item.Id">Checkout</a>
                 </td>
             </tr>
         }

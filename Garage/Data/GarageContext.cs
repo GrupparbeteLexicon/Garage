@@ -66,7 +66,7 @@ namespace Garage.Data
         new ParkedVehicle
         {
             Id = 4,
-            VehicleType = VehicleType.BUSS,
+            VehicleType = VehicleType.BUS,
             Registration = "BUS001",
             Color = "White",
             Brand = "Scania",

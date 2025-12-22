@@ -1,14 +1,14 @@
-﻿@model Garage.Models.ParkedVehicle
+﻿@using Garage.Extensions
+@model Garage.ViewModels.ParkingVehicleViewModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-
 <div>
-    <h4>ParkedVehicle</h4>
-    <hr />
+    <h4>
+        @Model.Brand @Model.Model
+    </h4>    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Registration)
@@ -54,8 +54,14 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ParkTime)
         </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ParkedDuration)
+        </dt>
+        <dd class = "col-sm-10">
+            @Model.ParkedDuration.ParkedDurationString()
+        </dd>
     </dl>
-    <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-info">Checkout</a>
+    <a asp-action="Unpark" asp-route-id="@Model?.Id" class="btn btn-primary">Checkout</a>
 </div>
 <div class="mt-4">
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

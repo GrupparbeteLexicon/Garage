@@ -65,7 +65,7 @@ namespace Garage.Controllers
             float placesUsed = CountPlaces(query);
             bool garageIsFull = placesUsed > Capacity;
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             viewModel.GarageIsFull = garageIsFull;
 
             return View(viewModel);
@@ -79,6 +79,8 @@ namespace Garage.Controllers
         public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration);
+            var query = _context.ParkedVehicle.AsQueryable();
+            float placesUsed = CountPlaces(query);
 
             if (parkedVehicle == null) 
             {
@@ -104,20 +106,23 @@ namespace Garage.Controllers
                 ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
             }
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             return View(viewModel);
         }
 
         // GET: ParkedVehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            var query = _context.ParkedVehicle.AsQueryable();
+            float placesUsed = CountPlaces(query);
+
             if (id == null)
             {
                 return NotFound();
             }
 
             var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
-            var viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+            var viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             viewModel.DisableEditParkTime = true;
 
             return View(viewModel);
@@ -130,7 +135,10 @@ namespace Garage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ParkedVehicle parkedVehicle)
         {
-           if (id != parkedVehicle.Id)
+            var query = _context.ParkedVehicle.AsQueryable();
+            float placesUsed = CountPlaces(query);
+
+            if (id != parkedVehicle.Id)
             {
                 return NotFound();
             }
@@ -169,7 +177,7 @@ namespace Garage.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle);
+            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             return View(viewModel);
         }
 
@@ -217,21 +225,14 @@ namespace Garage.Controllers
             return !_context.ParkedVehicle.Any(e => e.Registration == registration);
         }
 
-        private CreateOrEditViewModel GenerateCreateOrEditViewModel(ParkedVehicle parkedVehicle)
+        private CreateOrEditViewModel GenerateCreateOrEditViewModel(ParkedVehicle parkedVehicle, float placesLeft)
         {
-            var vehicleTypeList = Enum.GetValues(typeof(VehicleType))
-               .Cast<VehicleType>()
-               .Select(type => new SelectListItem
-               {
-                   Value = ((int)type).ToString(),
-                   Text = type.ToString()
-               })
-               .ToList();
+            var vehicleItemList = GetSelectItemsList(placesLeft);
 
             var viewModel = new CreateOrEditViewModel
             {
                 SelectedVehicleType = parkedVehicle.VehicleType,
-                VehicleTypeList = new SelectList(vehicleTypeList, "Value", "Text"),
+                VehicleTypeList = new SelectList(vehicleItemList, "Value", "Text"),
                 ParkedVehicle = parkedVehicle
             };
 

@@ -1,10 +1,11 @@
 ﻿using Garage.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Garage.Extensions
 {
     public static class CountPlacesExtension
     {
-        public static float Capacity { get; } = 50f;
+        public static float Capacity { get; } = 17f;
 
         public static float CountPlaces(IQueryable<ParkedVehicle> vehicles)
         {
@@ -43,6 +44,67 @@ namespace Garage.Extensions
                 VehicleType.TRUCK => 6, // 2 Places
                 _ => 1
             };
+        }
+
+        public static List<SelectListItem> GetSelectItemsList(float placesLeft)
+        {
+            var vehicleTypeList = new List<SelectListItem>();
+
+            if (placesLeft > 0.2f)
+            {
+                vehicleTypeList.Add(new SelectListItem
+                {
+                    Value = VehicleType.MOTORCYCLE.ToString(),
+                    Text = VehicleType.MOTORCYCLE.ToString()
+                });
+            }
+
+            if (placesLeft >= 1)
+            {
+                vehicleTypeList.Add(new SelectListItem
+                {
+                    Value = VehicleType.ATV.ToString(),
+                    Text = VehicleType.ATV.ToString()
+                });
+
+                vehicleTypeList.Add(new SelectListItem
+                {
+                    Value = VehicleType.CAR.ToString(),
+                    Text = VehicleType.CAR.ToString()
+                });
+            }
+
+            if (placesLeft >= 2)
+            {
+                vehicleTypeList.Add(new SelectListItem
+                {
+                    Value = VehicleType.TRUCK.ToString(),
+                    Text = VehicleType.TRUCK.ToString()
+                });
+            }
+
+            if (placesLeft >= 3)
+            {
+                vehicleTypeList.Add(new SelectListItem
+                {
+                    Value = VehicleType.AIRPLANE.ToString(),
+                    Text = VehicleType.AIRPLANE.ToString()
+                });
+
+                vehicleTypeList.Add(new SelectListItem
+                {
+                    Value = VehicleType.BOAT.ToString(),
+                    Text = VehicleType.BOAT.ToString()
+                });
+
+                vehicleTypeList.Add(new SelectListItem
+                {
+                    Value = VehicleType.BUS.ToString(),
+                    Text = VehicleType.BUS.ToString()
+                });
+            }
+
+            return vehicleTypeList;
         }
 
         public static string ToMixedFraction(float value, int maxDenominator = 3) // using maxDenominator 3 because we are interested in thirds

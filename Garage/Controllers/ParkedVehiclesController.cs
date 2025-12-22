@@ -25,6 +25,7 @@ namespace Garage.Controllers
             var query = _context.ParkedVehicle.AsQueryable();
 
             ViewData["Search"] = search;
+            ViewData["Type"] = type;
 
             if (!string.IsNullOrWhiteSpace(search))
             {

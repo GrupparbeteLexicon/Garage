@@ -29,7 +29,7 @@
             <input type="text" class="form-control" name="search" placeholder="Search registration..." value="@Context.Request.Query["search"]" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
             <button type="submit" class="btn btn-primary" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>Search</button>
             <a asp-action="Index"
-               class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")">
+               class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) && ViewData["Type"] == null ? "disabled" : "")">
                 Clear
             </a>
         </div>

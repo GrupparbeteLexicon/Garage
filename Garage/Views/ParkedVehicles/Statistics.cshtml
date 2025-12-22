@@ -1,0 +1,43 @@
+@model Garage.ViewModels.ParkingStatisticsViewModel
+
+@{
+    ViewData["Title"] = "Statistics";
+    var informationItems = new Dictionary<string, string>
+    {
+        {"Hourly rate", $"{Model.HourlyRate:F2} {Model.Currency}/h"},
+        {"Capacity", Model.Capacity.ToString()},
+        {"Used", Model.PlacesUsed.ToString()},
+        {"Available", Model.PlacesLeft},
+        {"Current revenue", $"{Model.TotalParkedTime * Model.HourlyRate:F2} {Model.Currency}"}
+    };
+}
+
+<div class="row">
+    <div class="col-lg-4 col-md-6 m-3">
+        <h2>Information</h2>
+        <ul class="list-group">
+        @foreach(var item in informationItems)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <span class="fw-bold me-auto">@item.Key</span>
+                <span>@item.Value</span>
+            </li>
+        }
+        </ul>
+    </div>
+
+    <div class="col-lg-4 col-md-6 m-3">
+        <h2>Vehicles by type</h2>
+        <div class="list-group">
+        @foreach (var vehicleType in Model.VehicleTypeCounts)
+        {
+            <a class="list-group-item list-group-item-action" asp-controller="ParkedVehicles" asp-action="Index" asp-route-type="@vehicleType.Key">
+            <div class="d-flex justify-content-between align-items-start">
+                @vehicleType.Key
+                <span class="badge bg-primary rounded-pill">@vehicleType.Value</span>
+            </div>
+            </a>
+        }
+        </div>
+    </div>
+</div>

@@ -1,4 +1,5 @@
 ﻿using Garage.Data;
+using Garage.Extensions;
 using Garage.Models;
 using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index(string search, VehicleType? type)
+        public async Task<IActionResult> Index(string search, VehicleType? type = null)
         {
             var query = _context.ParkedVehicle.AsQueryable();
 
@@ -38,6 +39,28 @@ namespace Garage.Controllers
                 .Select(v => new ParkingVehicleViewModel(v))
                 .ToListAsync();
             return View(vehicles);
+        }
+
+        // GET: ParkedVehicles/Statistics
+        public IActionResult Statistics()
+        {
+            float count = CountPlaces(_context.ParkedVehicle.AsQueryable());
+            ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
+            {
+                Capacity = (int)CountPlacesExtension.Capacity,
+                PlacesUsed = (int)Math.Ceiling(count), // show whole places used
+                PlacesLeft = ToMixedFraction(CountPlacesExtension.Capacity - count),
+                HourlyRate = 20.0M, // TODO: Move to configuration or database
+                Currency = "kr", // TODO: Move to configuration or database
+                TotalParkedTime = _context.ParkedVehicle
+                    .Select(s => DateTime.Now - s.ParkTime)
+                    .ToList()
+                    .Sum(s => (decimal)s.TotalHours),
+                VehicleTypeCounts = _context.ParkedVehicle
+                    .GroupBy(v => v.VehicleType)
+                    .ToDictionary(g => g.Key.GetDisplayName(), g => g.Count()),
+            };
+            return View(model);
         }
 
         // GET: ParkedVehicles/Details/5

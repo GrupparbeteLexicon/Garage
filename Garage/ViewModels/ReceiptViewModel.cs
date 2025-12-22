@@ -9,7 +9,7 @@ namespace Garage.ViewModels
         public DateTime? ParkTime { get; set; }
         public DateTime? LeaveTime { get; set; }
         public TimeSpan TotalParkedTime { get; set; }
-        public decimal TotalPrice { get; set; } = 0;
+        public decimal TotalPrice { get; set; }
         public string Currency { get; set; }
     }
 }

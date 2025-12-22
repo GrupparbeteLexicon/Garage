@@ -1,0 +1,62 @@
+﻿@using System.Globalization
+@using Garage.Extensions
+@model Garage.ViewModels.ReceiptViewModel;
+
+@{
+    ViewData["Title"] = "Receipt";
+}
+
+<h1>Kvitto</h1>
+<hr />
+
+<div class="receipt">
+    <div class="receipt-header">
+        <img src="~/icons/garage-black.svg" alt="garage icon" class="receipt-logo" />
+        <h1>GARAGE</h1>
+        <p class="receipt-subtitle">Parking Receipt</p>
+    </div>
+
+    <div class="receipt-divider">----------------------------</div>
+
+    <div class="receipt-row">
+        <label>Registration</label>
+        <span>@Model.Registration</span>
+    </div>
+
+    <div class="receipt-row">
+        <label>Vehicle type</label>
+        <span>@Model.VehicleType.GetDisplayName()</span>
+    </div>
+
+    <div class="receipt-row">
+        <label>Parked at: </label>
+        <span>@Model.ParkTime</span>
+    </div>
+
+    <div class="receipt-row">
+        <label>Left at: </label>
+        <span>@Model.LeaveTime</span>
+    </div>
+
+    <br />
+    <div class="receipt-row">
+        <label>Total time: </label>
+        <span>@Model.TotalParkedTime.ParkedDurationString()</span>
+    </div>
+
+    <p class="receipt-row">
+        <label>Total price: </label>
+        <span>@Model.TotalPrice.ToString("N2", new CultureInfo("sv-SE")) @Model.Currency</span>
+    </p>
+
+    <div class="receipt-divider">----------------------------</div>
+
+    <p class="receipt-footer">
+        Thank you for parking<br />
+        Drive safely
+    </p>
+</div>
+
+<div class="my-5">
+    <a asp-controller="ParkedVehicles" asp-action="Index">Back to List</a>
+</div>

@@ -30,7 +30,7 @@
                             <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="Home" asp-action="Statistics">Statistics</a>
+                            <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="ParkedVehicles" asp-action="Statistics">Statistics</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="ParkedVehicles" asp-action="Index">Vehicles</a>
@@ -48,6 +48,8 @@
         </div>
     </main>
 
+    
+
     <!-- Footer -->
     <footer class="py-4 mt-auto footer-custom">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center small">
@@ -58,6 +60,7 @@
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 
 </html>

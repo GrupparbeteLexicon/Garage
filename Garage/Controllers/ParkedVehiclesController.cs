@@ -1,11 +1,11 @@
 ﻿using Garage.Data;
+using Garage.Extensions;
 using Garage.Models;
 using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using static Garage.Extensions.CountPlacesExtension;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Garage.Controllers
 {
@@ -19,11 +19,12 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index(string search, VehicleType? type)
+        public async Task<IActionResult> Index(string search, VehicleType? type = null)
         {
             var query = _context.ParkedVehicle.AsQueryable();
 
             ViewData["Search"] = search;
+            ViewData["Type"] = type;
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -38,6 +39,34 @@ namespace Garage.Controllers
                 .Select(v => new ParkingVehicleViewModel(v))
                 .ToListAsync();
             return View(vehicles);
+        }
+
+        // GET: ParkedVehicles/Statistics
+        public IActionResult Statistics()
+        {
+            float count = CountPlaces(_context.ParkedVehicle.AsQueryable());
+            DateTime now = DateTime.Now;
+            ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
+            {
+                
+                Capacity = (int)CountPlacesExtension.Capacity,
+                PlacesUsed = (int)Math.Ceiling(count), // show whole places used
+                PlacesLeft = ToMixedFraction(CountPlacesExtension.Capacity - count),
+                HourlyRate = PriceExtentions.HourlyRate, // TODO: Move to configuration or database
+                Currency = PriceExtentions.Currency, // TODO: Move to configuration or database
+                TotalParkedTime = _context.ParkedVehicle
+                    .Select(s => now - s.ParkTime)
+                    .ToList()
+                    .Sum(s => (decimal)s.TotalHours),
+                TotalRevenue = _context.ParkedVehicle
+                    .Select(s => (now - s.ParkTime).ParkedTimeToPrice())
+                    .ToList()
+                    .Sum(s => s),
+                VehicleTypeCounts = _context.ParkedVehicle
+                    .GroupBy(v => v.VehicleType)
+                    .ToDictionary(g => g.Key.GetDisplayName(), g => g.Count()),
+            };
+            return View(model);
         }
 
         // GET: ParkedVehicles/Details/5
@@ -65,7 +94,7 @@ namespace Garage.Controllers
             ParkedVehicle parkedVehicle = new ParkedVehicle();
             parkedVehicle.ParkTime = DateTime.Now;
 
-            var query = _context.ParkedVehicle.AsQueryable();
+			var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
             bool garageIsFull = placesUsed > Capacity;
 
@@ -73,28 +102,30 @@ namespace Garage.Controllers
             viewModel.GarageIsFull = garageIsFull;
             viewModel.DisableEditParkTime = true;
 
-            return View(viewModel);
+			return View(viewModel);
         }
 
-        // POST: ParkedVehicles/Park
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Park")]
+
+		// POST: ParkedVehicles/Park
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost, ActionName("Park")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
             var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
+			CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
 
-            if (parkedVehicle == null) 
+			if (parkedVehicle == null) 
             {
                  return Problem("Entity set 'GarageContext.ParkedVehicle'  is null.");
             }
 
             if (ModelState.IsValid && isUnique)
             {
-               try
+                try
                 {
                     _context.Add(new ParkedVehicle
                     {
@@ -110,19 +141,20 @@ namespace Garage.Controllers
                     await _context.SaveChangesAsync();
                 } catch (DbUpdateException ex)
                 {
-                    ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
-                    Console.WriteLine(ex.Message);
+					ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
+					Console.WriteLine(ex.Message);
                     return View(parkedVehicle);
                 }
-                return RedirectToAction(nameof(Index));
+
+				TempData["SuccessMessage"] = $"Vehicle with Registration Number: {parkedVehicle.Registration.ToUpper()} parked successfully!";
+				return RedirectToAction(nameof(Index));
             }
             else if (!isUnique)
             {
                 ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
-            }
+			}
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
-            return View(viewModel);
+			return View(viewModel);
         }
 
         // GET: ParkedVehicles/Edit/5
@@ -140,7 +172,7 @@ namespace Garage.Controllers
             var viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             viewModel.DisableEditParkTime = true;
 
-            return View(viewModel);
+			return View(viewModel);
         }
 
         // POST: ParkedVehicles/Edit/5
@@ -179,24 +211,20 @@ namespace Garage.Controllers
 
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
                     if (!ParkedVehicleExists(parkedVehicle.Id))
                     {
-                        return NotFound();
+						TempData["ErrorMessage"] = $"Vehicle not found";
+						return NotFound();
                     }
-                    else
-                    {
-						TempData["ErrorMessage"] = $"Something went wrong, contact us for more information";
-                        throw;
-                    }
+
+                    TempData["ErrorMessage"] = $"Could not edit vehicle.";
+                    return RedirectToAction(nameof(Index));
                 }
 
 				TempData["SuccessMessage"] = $"Vehicle edited successfully!";
 				return RedirectToAction(nameof(Index));
-            } else
-            {
-                ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
             }
 
                 CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
@@ -230,10 +258,26 @@ namespace Garage.Controllers
             var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
             if (parkedVehicle != null)
             {
+                DateTime now = DateTime.Now;
+                TimeSpan totalParkedTime = now - parkedVehicle.ParkTime;
+
+                var receipt = new ReceiptViewModel
+                {
+                    Registration = parkedVehicle.Registration,
+                    VehicleType = parkedVehicle.VehicleType,
+                    ParkTime = parkedVehicle.ParkTime,
+                    LeaveTime = now,
+                    TotalParkedTime = totalParkedTime,
+                    TotalPrice = PriceExtentions.CalculateCost(totalParkedTime),
+                    Currency = PriceExtentions.Currency
+                };
+
                 _context.ParkedVehicle.Remove(parkedVehicle);
+
+                await _context.SaveChangesAsync();
+                return View("Receipt", receipt);
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

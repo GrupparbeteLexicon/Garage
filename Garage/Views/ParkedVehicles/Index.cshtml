@@ -7,39 +7,57 @@
 
 <h1>Parked Vehicles</h1>
 
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-center column-gap-1">
-    @if (CountPlacesExtension.CountPlaces(Model) > CountPlacesExtension.Capacity)
-    {
-        <button class="btn btn-danger" disabled>
-            Can't park vehicles
-        </button>
-    }
-    else {
-        <!-- Park button (NOT in form, NOT submitting) -->
-        <a asp-action="Park" class="btn btn-primary">
-            Park a new Vehicle
-        </a>
-    }
-    
-   
+<div class="d-flex flex-column gap-2">
+    <div class="d-flex flex-column flex-md-row align-items-center gap-2">
 
-    <!-- Search form -->
-    <form class="d-flex w-50" method="get">
-        <div class="input-group">
-            <input type="text" class="form-control" name="search" placeholder="Search registration..." value="@Context.Request.Query["search"]" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
-            <button type="submit" class="btn btn-primary" @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>Search</button>
-            <a asp-action="Index"
-               class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")">
-                Clear
+        @if (CountPlacesExtension.CountPlaces(Model) > CountPlacesExtension.Capacity)
+        {
+            <button class="btn btn-danger" disabled>
+                Can't park vehicles
+            </button>
+        }
+        else
+        {
+            <a asp-action="Park" class="btn btn-primary">
+                Park a new Vehicle
             </a>
-        </div>
-    </form>
+        }
+
+        <!-- Search form -->
+        <form class="d-flex w-50 ms-auto" method="get">
+            <!-- Här la vi till ms-auto -->
+            <div class="input-group">
+                <input type="text"
+                       class="form-control"
+                       name="search"
+                       placeholder="Search registration..."
+                       value="@Context.Request.Query["search"]"
+                       @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
+
+                <button type="submit"
+                        class="btn btn-primary"
+                        @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>
+                    Search
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) && ViewData["Type"] == null ? "disabled" : "")">
+                    Clear
+                </a>
+            </div>
+        </form>
+
+    </div>
+
+
+    @Html.Partial("~/Views/Partials/Validation.cshtml")
+
 </div>
 
 <table class="table table-striped my-5">
     <thead>
         <tr>
-            <th scope="col">Name</th>
+            @*<th scope="col">Name</th>*@
             <th scope="col">
                 @Html.DisplayNameFor(model => model.VehicleType)
             </th>
@@ -58,10 +76,12 @@
         @foreach (var item in Model)
         {
             <tr>
+                @*
                 <td>
                     @Html.DisplayFor(modelItem => item.Brand)
                     @Html.DisplayFor(modelItem => item.Model)
                 </td>
+                *@
                 <td>
                     @Html.DisplayFor(modelItem => item.VehicleType)
                 </td>

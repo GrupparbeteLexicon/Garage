@@ -216,5 +216,32 @@ namespace Garage.Controllers
 
             return viewModel;
         }
+
+        public async Task<IActionResult> GarageStatistics()
+        {
+            var now = DateTime.Now;
+
+            var vehicles = await _context.ParkedVehicle.ToListAsync();
+
+            var model = new GarageStatisticsViewModel
+            {
+                TotalVehicles = vehicles.Count,
+
+                VehiclesByType = vehicles
+                    .GroupBy(v => v.VehicleType)
+                    .ToDictionary(g => g.Key, g => g.Count()),
+
+                // Total wheels in garage
+                TotalWheels = vehicles.Sum(v => v.Wheels),
+
+                // Total combined parking time
+                TotalParkedTime = TimeSpan.FromMinutes(
+                    vehicles.Sum(v => (now - v.ParkTime).TotalMinutes)
+                )
+            };
+
+            return View(model);
+        }
+
     }
 }

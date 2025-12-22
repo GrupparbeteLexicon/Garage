@@ -1,0 +1,20 @@
+﻿@model Garage.ViewModels.GarageStatisticsViewModel
+
+<h2>Garage Statistics</h2>
+
+<p><strong>Total parked vehicles:</strong> @Model.TotalVehicles</p>
+
+<p><strong>Total wheels in garage:</strong> @Model.TotalWheels</p>
+
+<p>
+    <strong>Total combined parking time:</strong>
+    Model.TotalParkedTime.ParkedDurationString()
+</p>
+
+<h3>Vehicles by type</h3>
+<ul>
+    @foreach (var item in Model.VehiclesByType)
+    {
+        <li>@item.Key: @item.Value</li>
+    }
+</ul>

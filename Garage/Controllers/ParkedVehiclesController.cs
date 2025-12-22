@@ -83,7 +83,7 @@ namespace Garage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
         {
-            bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration);
+            bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
             var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
 
@@ -150,6 +150,7 @@ namespace Garage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ParkedVehicle parkedVehicle)
         {
+            bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, parkedVehicle.Id);
             var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
 
@@ -158,7 +159,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && isUnique)
             {
                 try
                 {
@@ -186,13 +187,19 @@ namespace Garage.Controllers
                     }
                     else
                     {
+						TempData["ErrorMessage"] = $"Something went wrong, contact us for more information";
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+				TempData["SuccessMessage"] = $"Vehicle edited successfully!";
+				return RedirectToAction(nameof(Index));
+            } else
+            {
+                ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
             }
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+                CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             return View(viewModel);
         }
 
@@ -235,9 +242,11 @@ namespace Garage.Controllers
             return _context.ParkedVehicle.Any(e => e.Id == id);
         }
 
-        private bool ParkedVehicleIsUnique(string registration)
+        private bool ParkedVehicleIsUnique(string registration, int? id)
         {
-            return !_context.ParkedVehicle.Any(e => e.Registration == registration);
+            return !_context.ParkedVehicle
+                .Where(e => e.Id != id)
+                .Any(e => e.Registration == registration);
         }
 
         private CreateOrEditViewModel GenerateCreateOrEditViewModel(ParkedVehicle parkedVehicle, float placesLeft)

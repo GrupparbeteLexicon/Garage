@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Garage.Models;
 
@@ -16,5 +17,11 @@ public enum VehicleType {
     BUS,
 
     [Display(Name = "Truck")]
-    TRUCK 
+    TRUCK,
+
+    [Display(Name = "Airplane")]
+    AIRPLANE,
+
+    [Display(Name = "Boat")]
+    BOAT
 }

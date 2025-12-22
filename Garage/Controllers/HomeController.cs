@@ -1,21 +1,35 @@
-using System.Diagnostics;
+using Garage.Data;
 using Garage.Models;
+using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using static Garage.Extensions.CountPlacesExtension;
 
 namespace Garage.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly GarageContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(GarageContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var query = _context.ParkedVehicle.AsQueryable();
+            HomeViewModel homeViewModel = new HomeViewModel();
+
+            int vehiclesParked = query.Count();
+            float placesUsed = CountPlaces(query);
+            string placesLeft = ToMixedFraction(homeViewModel.Capacity - placesUsed);
+
+            homeViewModel.VehiclesParked = vehiclesParked;
+            homeViewModel.PlacesLeft = placesLeft;
+            homeViewModel.GarageIsFull = placesUsed > homeViewModel.Capacity;
+
+            return View(homeViewModel);
         }
 
         public IActionResult Privacy()

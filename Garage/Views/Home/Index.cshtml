@@ -1,9 +1,31 @@
-﻿@{
+﻿@model Garage.ViewModels.HomeViewModel;
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<img class="d-block mx-auto mb-4 img-fluid" src="~/images/header-start-hogalid.jpg" alt="parked cars">
+<div class="container text-center my-5">
+    <img class="d-block mx-auto mb-4 img-fluid rounded" src="~/images/header-start-hogalid.jpg" alt="parked cars">
+    <h1 class="fw-bold">Safe. Easy. Convenient.</h1>
+    <p class="lead">Park your car quickly and securely. Modern facilities, 24/7 access, and hassle-free parking.</p>
+</div>
 
-<h1>Safe. Easy. Convenient.</h1>
-
-<p>Park your car quickly and securely. Modern facilities, 24/7 access, and hassle-free parking.</p>
+<div class="container my-5 d-flex justify-content-center">
+    <div class="card shadow-sm d-inline-block text-center" style="min-width: 250px; max-width: 400px;">
+        <div class="card-body">
+            @if (Model.GarageIsFull)
+            {
+                <i class="bi bi-x-circle-fill text-danger" style="font-size: 3rem;"></i>
+                <h2 class="text-danger mt-2">Garage is Full!</h2>
+                <p>Please wait until some vehicles checkout.</p>
+            }
+            else
+            {
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                <h2 class="text-success mt-2">We Have Available Spots!</h2>
+                <p><strong>Places left:</strong> @(Model.PlacesLeft)</p>
+                <a asp-controller="ParkedVehicles" asp-action="Park" class="btn btn-success btn-lg mt-3">Park a Vehicle</a>
+            }
+        </div>
+    </div>
+</div>

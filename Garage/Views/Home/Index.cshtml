@@ -1,3 +1,4 @@
+@using static Garage.Extensions.PriceExtentions;
 @model Garage.ViewModels.HomeViewModel;
 
 @{
@@ -23,7 +24,26 @@
             {
                 <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
                 <h2 class="text-success mt-2">We Have Available Spots!</h2>
-                <p><strong>Places left:</strong> @(Model.PlacesLeft)</p>
+                <dl class="row">
+                    <dt class ="col-6 text-end">
+                        <strong>Places left:</strong>
+                    </dt>
+                    <dd class="col-6 text-start">
+                        @(Model.PlacesLeft)
+                    </dd>
+                    <dt class="col-6 text-end">
+                        <strong>Price:</strong>
+                    </dt>
+                    <dd class="col-6 text-start">
+                        @(HourlyRate + Currency + " per 30 minutes.")
+                    </dd>
+                    <dt class="col-6 text-end">
+                        <strong>Note:</strong>
+                    </dt>
+                    <dd class="col-6 text-start">
+                        Two hours free parking.
+                    </dd>
+                </dl>
                 <a asp-controller="ParkedVehicles" asp-action="Park" class="btn btn-success btn-lg mt-3">Park a Vehicle</a>
             }
         </div>

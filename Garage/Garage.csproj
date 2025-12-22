@@ -8,16 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Kvitto\**" />
+    <Content Remove="Views\Kvitto\**" />
+    <EmbeddedResource Remove="Views\Kvitto\**" />
+    <None Remove="Views\Kvitto\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.11" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Kvitto\" />
   </ItemGroup>
 
 </Project>

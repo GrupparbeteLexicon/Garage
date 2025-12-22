@@ -2,10 +2,10 @@
 @model IEnumerable<Garage.ViewModels.ParkingVehicleViewModel>;
 
 @{
-    ViewData["Title"] = "List of Parked Vehicles";
+    ViewData["Title"] = "Parked Vehicles";
 }
 
-<h1>List of Parked Vehicles</h1>
+<h1>Parked Vehicles</h1>
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center column-gap-1">
     @if (CountPlacesExtension.CountPlaces(Model) > CountPlacesExtension.Capacity)
@@ -39,6 +39,7 @@
 <table class="table table-striped my-5">
     <thead>
         <tr>
+            <th scope="col">Name</th>
             <th scope="col">
                 @Html.DisplayNameFor(model => model.VehicleType)
             </th>
@@ -58,7 +59,11 @@
         {
             <tr>
                 <td>
-                    <i class="bi @item.VehicleType.ToIconClass() me-1">  @Html.DisplayFor(modelItem => item.VehicleType)</i>
+                    @Html.DisplayFor(modelItem => item.Brand)
+                    @Html.DisplayFor(modelItem => item.Model)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VehicleType)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Registration)

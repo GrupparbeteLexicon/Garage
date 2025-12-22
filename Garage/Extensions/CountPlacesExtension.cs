@@ -1,5 +1,7 @@
 ﻿using Garage.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Garage.Extensions
 {
@@ -13,7 +15,7 @@ namespace Garage.Extensions
 
             foreach (var vehicle in vehicles)
             {
-                placesUsed += GetPlaceForVehicleType(vehicle.VehicleType);
+                placesUsed += GetPlaceSizeForVehicleType(vehicle.VehicleType);
             }
 
             return (float)placesUsed / 3; // Since 1 Place = 3 Units
@@ -25,13 +27,13 @@ namespace Garage.Extensions
 
             foreach (var vehicle in vehicles)
             {
-                placesUsed += GetPlaceForVehicleType(vehicle.VehicleType);
+                placesUsed += GetPlaceSizeForVehicleType(vehicle.VehicleType);
             }
 
             return (float)placesUsed / 3; // Since 1 Place = 3 Units
         }
 
-        private static int GetPlaceForVehicleType(VehicleType vehicleType)
+        private static int GetPlaceSizeForVehicleType(VehicleType vehicleType)
         {
             return vehicleType switch
             {
@@ -55,7 +57,7 @@ namespace Garage.Extensions
                 vehicleTypeList.Add(new SelectListItem
                 {
                     Value = VehicleType.MOTORCYCLE.ToString(),
-                    Text = VehicleType.MOTORCYCLE.ToString()
+                    Text = VehicleType.MOTORCYCLE.GetDisplayName()
                 });
             }
 
@@ -64,13 +66,13 @@ namespace Garage.Extensions
                 vehicleTypeList.Add(new SelectListItem
                 {
                     Value = VehicleType.ATV.ToString(),
-                    Text = VehicleType.ATV.ToString()
+                    Text = VehicleType.ATV.GetDisplayName()
                 });
 
                 vehicleTypeList.Add(new SelectListItem
                 {
                     Value = VehicleType.CAR.ToString(),
-                    Text = VehicleType.CAR.ToString()
+                    Text = VehicleType.CAR.GetDisplayName()
                 });
             }
 
@@ -79,7 +81,7 @@ namespace Garage.Extensions
                 vehicleTypeList.Add(new SelectListItem
                 {
                     Value = VehicleType.TRUCK.ToString(),
-                    Text = VehicleType.TRUCK.ToString()
+                    Text = VehicleType.TRUCK.GetDisplayName()
                 });
             }
 
@@ -88,23 +90,36 @@ namespace Garage.Extensions
                 vehicleTypeList.Add(new SelectListItem
                 {
                     Value = VehicleType.AIRPLANE.ToString(),
-                    Text = VehicleType.AIRPLANE.ToString()
+                    Text = VehicleType.AIRPLANE.GetDisplayName()
                 });
 
                 vehicleTypeList.Add(new SelectListItem
                 {
                     Value = VehicleType.BOAT.ToString(),
-                    Text = VehicleType.BOAT.ToString()
+                    Text = VehicleType.BOAT.GetDisplayName()
                 });
 
                 vehicleTypeList.Add(new SelectListItem
                 {
                     Value = VehicleType.BUS.ToString(),
-                    Text = VehicleType.BUS.ToString()
+                    Text = VehicleType.BUS.GetDisplayName()
                 });
             }
 
             return vehicleTypeList;
+        }
+
+        public static string GetDisplayName(this Enum value)
+        {
+            var member = value.GetType()
+                              .GetMember(value.ToString())
+                              .FirstOrDefault();
+
+            if (member == null)
+                return value.ToString();
+
+            var display = member.GetCustomAttribute<DisplayAttribute>();
+            return display?.Name ?? value.ToString();
         }
 
         public static string ToMixedFraction(float value, int maxDenominator = 3) // using maxDenominator 3 because we are interested in thirds

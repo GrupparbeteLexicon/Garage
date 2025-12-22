@@ -43,7 +43,7 @@ namespace Garage.Controllers
         {
             ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
             {
-                Capacity = 50, // TODO: Replace with actual capacity
+                Capacity = (int)Capacity,
                 Count = _context.ParkedVehicle.Count(),
                 HourlyRate = 20.0M, // TODO: Move to configuration or database
                 Currency = "kr", // TODO: Move to configuration or database

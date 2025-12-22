@@ -45,8 +45,8 @@ namespace Garage.Controllers
             {
                 Capacity = (int)Capacity,
                 Count = _context.ParkedVehicle.Count(),
-                HourlyRate = 20.0M, // TODO: Move to configuration or database
-                Currency = "kr", // TODO: Move to configuration or database
+                HourlyRate = HourlyRate, // TODO: Move to configuration or database
+                Currency = Currency, // TODO: Move to configuration or database
                 TotalParkedTime = _context.ParkedVehicle
                     .Select(s => DateTime.Now - s.ParkTime)
                     .ToList()

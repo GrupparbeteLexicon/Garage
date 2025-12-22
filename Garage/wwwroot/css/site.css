@@ -79,3 +79,56 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #0d1b2a;
     color: #ffffff;
 }
+
+.receipt {
+    width: 280px; /* classic receipt width */
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    color: #000;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    border: 1px dashed #ccc;
+}
+
+.receipt-header {
+    text-align: center;
+}
+
+.receipt-logo {
+    width: 40px;
+    margin-bottom: 0.5rem;
+}
+
+.receipt-header h1 {
+    font-size: 20px;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.receipt-subtitle {
+    font-size: 12px;
+    margin: 0.25rem 0 0.5rem;
+}
+
+.receipt-divider {
+    text-align: center;
+    margin: 0.75rem 0;
+}
+
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.25rem 0;
+
+    & > label {
+        font-weight: bolder;
+    }
+}
+
+.receipt-footer {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 1rem;
+}

@@ -51,8 +51,8 @@ namespace Garage.Controllers
                 Capacity = (int)CountPlacesExtension.Capacity,
                 PlacesUsed = (int)Math.Ceiling(count), // show whole places used
                 PlacesLeft = ToMixedFraction(CountPlacesExtension.Capacity - count),
-                HourlyRate = 20.0M, // TODO: Move to configuration or database
-                Currency = "kr", // TODO: Move to configuration or database
+                HourlyRate = CountPlacesExtension.HourlyRate, // TODO: Move to configuration or database
+                Currency = CountPlacesExtension.Currency, // TODO: Move to configuration or database
                 TotalParkedTime = _context.ParkedVehicle
                     .Select(s => DateTime.Now - s.ParkTime)
                     .ToList()

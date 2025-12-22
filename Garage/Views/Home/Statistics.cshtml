@@ -1,0 +1,54 @@
+@model Garage.ViewModels.ParkingStatisticsViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container text-center my-5">
+    <img class="d-block mx-auto mb-4 img-fluid rounded" src="~/images/header-start-hogalid.jpg" alt="parked cars">
+    <h1 class="fw-bold">Safe. Easy. Convenient.</h1>
+    <p class="lead">Park your car quickly and securely. Modern facilities, 24/7 access, and hassle-free parking.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 col-md-6 m-3">
+        <h2>Information</h2>
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <span class="fw-bold me-auto">Hourly rate</span>
+                <span>@($"{Model.HourlyRate:F2} {Model.Currency}")/h</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <span class="fw-bold me-auto">Capacity</span>
+                <span>@Model.Capacity</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <span class="fw-bold me-auto">Used</span>
+                <span>@Model.Count</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <span class="fw-bold me-auto">Available</span>
+                <span>@(Model.Capacity - Model.Count)</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <span class="fw-bold me-auto">Current revenue</span>
+                <span>@($"{Model.TotalParkedTime * Model.HourlyRate:F2} {Model.Currency}")</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-lg-4 col-md-6 m-3">
+        <h2>Vehicles by type</h2>
+        <div class="list-group">
+        @foreach (var vehicleType in Model.VehicleTypeCounts)
+        {
+            <a class="list-group-item list-group-item-action" asp-controller="ParkedVehicles" asp-action="Index" asp-route-type="@vehicleType.Key">
+            <div class="d-flex justify-content-between align-items-start">
+                @vehicleType.Key
+                <span class="badge bg-primary rounded-pill">@vehicleType.Value</span>
+            </div>
+            </a>
+        }
+        </div>
+    </div>
+</div>

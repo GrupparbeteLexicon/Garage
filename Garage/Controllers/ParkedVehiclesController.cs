@@ -305,12 +305,5 @@ namespace Garage.Controllers
 
             return viewModel;
         }
-        /* Onödig?
-        [HttpPost, ActionName("Receipt")]
-        public async Task<IActionResult> Receipt()
-        {
-            return View();
-        }
-        */
     }
 }

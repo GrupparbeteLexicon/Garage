@@ -225,9 +225,15 @@ namespace Garage.Controllers
 
 				TempData["SuccessMessage"] = $"Vehicle edited successfully!";
 				return RedirectToAction(nameof(Index));
+            } else
+            {
+                if (!isUnique)
+                {
+                    ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
+                }
             }
 
-                CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             return View(viewModel);
         }
 

@@ -89,7 +89,7 @@ namespace Garage.Controllers
             ParkedVehicle parkedVehicle = new ParkedVehicle();
             parkedVehicle.ParkTime = DateTime.Now;
 
-            var query = _context.ParkedVehicle.AsQueryable();
+			var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
             bool garageIsFull = placesUsed > Capacity;
 
@@ -97,21 +97,23 @@ namespace Garage.Controllers
             viewModel.GarageIsFull = garageIsFull;
             viewModel.DisableEditParkTime = true;
 
-            return View(viewModel);
+			return View(viewModel);
         }
 
-        // POST: ParkedVehicles/Park
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost, ActionName("Park")]
+
+		// POST: ParkedVehicles/Park
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost, ActionName("Park")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration);
             var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
+			CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
 
-            if (parkedVehicle == null) 
+			if (parkedVehicle == null) 
             {
                  return Problem("Entity set 'GarageContext.ParkedVehicle'  is null.");
             }
@@ -134,19 +136,20 @@ namespace Garage.Controllers
                     await _context.SaveChangesAsync();
                 } catch (DbUpdateException ex)
                 {
-                    ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
-                    Console.WriteLine(ex.Message);
+					ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
+					Console.WriteLine(ex.Message);
                     return View(parkedVehicle);
                 }
-                return RedirectToAction(nameof(Index));
+
+				TempData["SuccessMessage"] = $"Vehicle with Registration Number: {parkedVehicle.Registration.ToUpper()} parked successfully!";
+				return RedirectToAction(nameof(Index));
             }
             else if (!isUnique)
             {
                 ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
-            }
+			}
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
-            return View(viewModel);
+			return View(viewModel);
         }
 
         // GET: ParkedVehicles/Edit/5
@@ -164,7 +167,7 @@ namespace Garage.Controllers
             var viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
             viewModel.DisableEditParkTime = true;
 
-            return View(viewModel);
+			return View(viewModel);
         }
 
         // POST: ParkedVehicles/Edit/5
@@ -206,14 +209,18 @@ namespace Garage.Controllers
                 {
                     if (!ParkedVehicleExists(parkedVehicle.Id))
                     {
-                        return NotFound();
+						TempData["ErrorMessage"] = $"Vehicle not found";
+						return NotFound();
                     }
                     else
                     {
-                        throw;
+						TempData["ErrorMessage"] = $"Something went wrong, contact us for more information";
+						throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+				TempData["SuccessMessage"] = $"Vehicle edited successfully!";
+				return RedirectToAction(nameof(Index));
             }
 
             CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);

@@ -8,6 +8,8 @@ namespace Garage.Extensions
     public static class CountPlacesExtension
     {
         public static float Capacity { get; } = 50f;
+        public static decimal HourlyRate { get; } = 20.0M;
+        public static string Currency { get; } = "kr";
 
         public static float CountPlaces(IQueryable<ParkedVehicle> vehicles)
         {

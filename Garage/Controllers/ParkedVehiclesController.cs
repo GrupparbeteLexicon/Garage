@@ -223,10 +223,26 @@ namespace Garage.Controllers
             var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
             if (parkedVehicle != null)
             {
+                DateTime now = DateTime.Now;
+                TimeSpan totalParkedTime = now - parkedVehicle.ParkTime;
+
+                var kvitto = new KvittoViewModel
+                {
+                    Registration = parkedVehicle.Registration,
+                    VehicleType = parkedVehicle.VehicleType,
+                    ParkTime = parkedVehicle.ParkTime,
+                    LeaveTime = DateTime.Now,
+                    TotalParkedTime = totalParkedTime,
+                    TotalPrice = HourlyRate * (decimal)totalParkedTime.TotalHours,
+                    Currency = Currency
+                };
+
                 _context.ParkedVehicle.Remove(parkedVehicle);
+
+                await _context.SaveChangesAsync();
+                return View("~/Views/Kvitto/Index.cshtml", kvitto);
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

@@ -7,16 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Garage.Data
 {
-    public class GarageContext : DbContext
+    public class GarageContext(DbContextOptions<GarageContext> options)
+        : IdentityDbContext<ApplicationUser, IdentityRole, string>(options)
     {
-        public GarageContext(DbContextOptions<GarageContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<ParkedVehicle> ParkedVehicle { get; set; } = default!;
 
         // Seed data

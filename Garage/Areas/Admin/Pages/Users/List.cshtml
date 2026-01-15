@@ -1,0 +1,54 @@
+@page
+@model ListModel
+
+@{
+    ViewData["Title"] = "User List";
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_Validation"></partial>
+<table class="table table-striped my-5">
+    <thead>
+    <tr>
+        <th scope="col">
+            Name
+        </th>
+        <th scope="col">
+            Role
+        </th>
+        <th scope="col">
+            Vehicles
+        </th>
+        <th scope="col">
+            Total Revenue
+        </th>
+        <th>
+            Actions
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model.Users)
+    {
+        <tr>
+            <td>
+                @user.Name
+            </td>
+            <td>
+                @string.Join(", ", user.Roles)
+            </td>
+            <td>
+                @user.VehicleCount
+            </td>
+            <td>
+                @user.TotalRevenue
+            </td>
+            <td>
+                <a asp-page="./Details" asp-route-id="@user.Id">Details</a> |
+                <a asp-page="./Details" asp-route-id="@user.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@user.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

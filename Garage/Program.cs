@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Garage.Data;
+using Garage.Models;
+using Microsoft.AspNetCore.Identity;
+
 namespace Garage
 {
     public class Program
@@ -10,6 +13,9 @@ namespace Garage
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<GarageContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("GarageContext") ?? throw new InvalidOperationException("Connection string 'GarageContext' not found.")));
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<GarageContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -24,6 +30,12 @@ namespace Garage
                 app.UseHsts();
             }
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<GarageContext>();
+                db.Database.Migrate();
+            }
+
             app.UseHttpsRedirection();
             app.UseRouting();
 
@@ -33,6 +45,8 @@ namespace Garage
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
+                .WithStaticAssets();
+            app.MapRazorPages()
                 .WithStaticAssets();
 
             app.Run();

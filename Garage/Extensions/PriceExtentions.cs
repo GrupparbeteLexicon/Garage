@@ -3,7 +3,7 @@ namespace Garage.Extensions;
 
 public static class PriceExtentions
 {
-    public static decimal HourlyRate { get; } = 20.0M;
+    public static decimal HourlyRate { get; } = 20.00M;
     public static string Currency { get; } = "kr";
 
     // You pay every 30 minutes

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Garage.Data;
+using Garage.Extensions;
 using Garage.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,7 +9,7 @@ namespace Garage
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<GarageContext>(options =>
@@ -28,6 +29,10 @@ namespace Garage
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+            else
+            {
+                await app.SeedDefaultData();
             }
 
             using (var scope = app.Services.CreateScope())

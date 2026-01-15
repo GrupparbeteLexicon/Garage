@@ -1,11 +1,11 @@
 ﻿using Garage.Models;
+using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 
 namespace Garage.ViewModels
 {
     public class ParkingSpotViewModel
     {
-
         public int Id { get; }
 
         public int? ParkedCarID { get;}
@@ -34,6 +34,7 @@ namespace Garage.ViewModels
         {
             ArgumentNullException.ThrowIfNull(spot);
             Id = spot.Id;
+            ParkedCarID = spot.ParkedCarID;
             Name = spot.Name;
             Blocked = spot.Blocked;
             ParkTime = spot.ParkTime;

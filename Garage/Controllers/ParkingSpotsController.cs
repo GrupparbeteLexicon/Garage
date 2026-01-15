@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Garage.Data;
+using Garage.Models;
+using Garage.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Garage.Data;
-using Garage.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Garage.Controllers
 {
@@ -20,9 +22,10 @@ namespace Garage.Controllers
         }
 
         // GET: ParkingSpots
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ParkingSpot.ToListAsync());
+            return View(await _context.ParkingSpot.Select(v => new ParkingSpotViewModel(v)).ToListAsync());
         }
 
         // GET: ParkingSpots/Details/5

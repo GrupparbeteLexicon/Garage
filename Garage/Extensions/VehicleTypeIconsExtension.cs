@@ -4,17 +4,17 @@ namespace Garage.Extensions
 {
     public static class VehicleTypeExtensions
     {
-        public static string ToIconClass(this VehicleType vehicleType)
+        public static string ToIconClass(this VehicleTypeModel vehicleType)
         {
             return vehicleType switch
             {
-                VehicleType.CAR => "bi-car-front-fill",
-                VehicleType.MOTORCYCLE => "bi-bicycle",
-                VehicleType.ATV => "bi-truck",
-                VehicleType.BUS => "bi-bus-front-fill",
-                VehicleType.TRUCK => "bi-truck-front-fill",
-                VehicleType.AIRPLANE => "bi-airplane-fill",
-                VehicleType.BOAT => "bi-boat-fill",
+                VehicleTypeModel.CAR => "bi-car-front-fill",
+                VehicleTypeModel.MOTORCYCLE => "bi-bicycle",
+                VehicleTypeModel.ATV => "bi-truck",
+                VehicleTypeModel.BUS => "bi-bus-front-fill",
+                VehicleTypeModel.TRUCK => "bi-truck-front-fill",
+                VehicleTypeModel.AIRPLANE => "bi-airplane-fill",
+                VehicleTypeModel.BOAT => "bi-boat-fill",
                 _ => "bi-question-circle"
             };
         }

@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
+using Garage.Annotations;
+
 namespace Garage.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
@@ -33,6 +35,7 @@ namespace Garage.Areas.Identity.Pages.Account
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
@@ -71,6 +74,21 @@ namespace Garage.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [Display(Name = "Last Name")]
+            [NotEqual("FirstName", ErrorMessage = "The first name and last name cannot be the same.")]
+            public string LastName { get; set; }
+
+            [Required]
+            [Display(Name = "Personal ID Number (Personnummer)")]
+            [RegularExpression(@"^\d{6}[-]?\d{4}$", ErrorMessage = "The Personal ID must be in the format YYMMDD-XXXX or YYMMDDXXXX.")]
+            [Unique(ErrorMessage = "The Personal ID already exists.")]
+            public string PersonalID { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -115,13 +133,39 @@ namespace Garage.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                user.PersonalID = Input.PersonalID;
+
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    var claimResult = await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("FullName", user.FullName));
+                    if (claimResult.Succeeded)
+                    {
+                        _logger.LogInformation("Added FullName claim for user.");
+                    }
+                    else
+                    {
+                        _logger.LogError("Error adding 'FullName' claim to the user: {Errors}", string.Join(", ", claimResult.Errors.Select(e => e.Description)));
+                    }
+
+                        var roleResult = await _userManager.AddToRoleAsync(user, "Member");
+                    if (roleResult.Succeeded)
+                    {
+                        _logger.LogInformation("User assigned to 'Member' role.");
+                    }
+                    else
+                    {
+                        _logger.LogError("Error assigning user to 'Member' role: {Errors}", string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

@@ -1,5 +1,4 @@
-﻿
-namespace Garage.Extensions;
+﻿namespace Garage.Extensions;
 
 public static class PriceExtentions
 {

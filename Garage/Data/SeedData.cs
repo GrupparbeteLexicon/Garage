@@ -15,7 +15,7 @@ public class SeedData
         _roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         _userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-        if (context.Roles.Any())
+        if (!context.Roles.Any())
             return;
 
         List<string> defaultRoles = [

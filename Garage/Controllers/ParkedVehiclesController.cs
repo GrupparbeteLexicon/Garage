@@ -69,8 +69,15 @@ namespace Garage.Controllers
             return View(model);
         }
 
-        // GET: ParkedVehicles/Details/5
-        public async Task<IActionResult> Details(int? id)
+		// GET: ParkedVehicles/Statistics
+		public IActionResult VehicleTypes()
+		{
+            var model = new VehicleTypeViewModel();
+			return View(model);
+		}
+
+		// GET: ParkedVehicles/Details/5
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {

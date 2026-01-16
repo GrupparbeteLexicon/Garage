@@ -18,6 +18,16 @@ public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDb
     public DbSet<ParkingSpot> ParkingSpots { get; set; } = default!;
     public DbSet<VehicleType> VehicleType { get; set; } = default!;
 
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Vehicle>()
+            .HasOne(v => v.ParkingSpot)          
+            .WithOne(p => p.ParkedVehicle)              
+            .HasForeignKey<Vehicle>(v => v.ParkingSpotId)  
+            .OnDelete(DeleteBehavior.SetNull);
+    }
+
     // Seed data
     // create 5 different vehicles with different VehicleType, Registration, Color, Brand, Model, Wheels, and ParkTime
     // Use realistic data for each vehicle

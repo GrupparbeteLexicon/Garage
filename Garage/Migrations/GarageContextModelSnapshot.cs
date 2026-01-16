@@ -129,7 +129,7 @@ namespace Garage.Migrations
                     b.HasIndex("Registration")
                         .IsUnique();
 
-                    b.ToTable("ParkedVehicle");
+                    b.ToTable("ParkedVehicle", (string)null);
 
                     b.HasData(
                         new
@@ -187,41 +187,6 @@ namespace Garage.Migrations
                             VehicleType = 4,
                             Wheels = 8
                         });
-                });
-
-            modelBuilder.Entity("Garage.Models.ParkingSpot", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Blocked")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ParkTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ParkedVehicleID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ParkingSpotSize")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParkTime");
-
-                    b.HasIndex("ParkedVehicleID");
-
-                    b.HasIndex("Blocked", "ParkedVehicleID");
-
-                    b.ToTable("ParkingSpots");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -359,15 +324,6 @@ namespace Garage.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Garage.Models.ParkingSpot", b =>
-                {
-                    b.HasOne("Garage.Models.ParkedVehicle", "ParkedVehicle")
-                        .WithMany()
-                        .HasForeignKey("ParkedVehicleID");
-
-                    b.Navigation("ParkedVehicle");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

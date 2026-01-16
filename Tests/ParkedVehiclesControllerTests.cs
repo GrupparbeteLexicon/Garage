@@ -51,7 +51,7 @@ namespace Tests
 			var vehicle = new ParkedVehicle
 			{
 				Registration = "NEW123",
-				VehicleType = VehicleType.CAR,
+				VehicleType = VehicleTypeModel.CAR,
 				Color = "Red",
 				Brand = "Volvo",
 				Model = "XC60",
@@ -79,7 +79,7 @@ namespace Tests
 			var vehicle = new ParkedVehicle
 			{
 				Registration = "DUP123",
-				VehicleType = VehicleType.CAR
+				VehicleType = VehicleTypeModel.CAR
 			};
 
 			// Call the Create method

@@ -16,6 +16,7 @@ namespace Garage.Data
         : IdentityDbContext<ApplicationUser, IdentityRole, string>(options)
     {
         public DbSet<ParkedVehicle> ParkedVehicle { get; set; } = default!;
+        public DbSet<VehicleType> VehicleType { get; set; } = default!;
 
         // Seed data
         // create 5 different vehicles with different VehicleType, Registration, Color, Brand, Model, Wheels, and ParkTime
@@ -31,7 +32,7 @@ namespace Garage.Data
         new ParkedVehicle
         {
             Id = 1,
-            VehicleType = VehicleType.CAR,
+            VehicleType = VehicleTypeModel.CAR,
             Registration = "ABC123",
             Color = "Red",
             Brand = "Volvo",
@@ -42,7 +43,7 @@ namespace Garage.Data
         new ParkedVehicle
         {
             Id = 2,
-            VehicleType = VehicleType.MOTORCYCLE,
+            VehicleType = VehicleTypeModel.MOTORCYCLE,
             Registration = "MOTO77",
             Color = "Black",
             Brand = "Yamaha",
@@ -53,7 +54,7 @@ namespace Garage.Data
         new ParkedVehicle
         {
             Id = 3,
-            VehicleType = VehicleType.ATV,
+            VehicleType = VehicleTypeModel.ATV,
             Registration = "ATV999",
             Color = "Green",
             Brand = "Polaris",
@@ -64,7 +65,7 @@ namespace Garage.Data
         new ParkedVehicle
         {
             Id = 4,
-            VehicleType = VehicleType.BUS,
+            VehicleType = VehicleTypeModel.BUS,
             Registration = "BUS001",
             Color = "White",
             Brand = "Scania",
@@ -75,7 +76,7 @@ namespace Garage.Data
         new ParkedVehicle
         {
             Id = 5,
-            VehicleType = VehicleType.TRUCK,
+            VehicleType = VehicleTypeModel.TRUCK,
             Registration = "TRK888",
             Color = "Blue",
             Brand = "MAN",

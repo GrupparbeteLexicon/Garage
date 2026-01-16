@@ -8,7 +8,7 @@ public class ParkedVehicle
 {
     public int Id { get; set; }
 
-    public VehicleType VehicleType { get; set; }
+    public VehicleTypeModel VehicleType { get; set; }
 
     [StringLength(6)]
     public string Registration { get; set; }

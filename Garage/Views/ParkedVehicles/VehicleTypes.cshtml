@@ -1,8 +1,51 @@
 ﻿@using Garage.Extensions
-@model Garage.ViewModels.VehicleTypeViewModel
+@model IEnumerable<Garage.ViewModels.VehicleTypeViewModel>
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<p>hallå!</p>
+<h1>Vehicle Types</h1>
+
+<div class="d-flex flex-column gap-2">
+    <div class="d-flex flex-column flex-md-row align-items-center gap-2">
+        <a asp-action="AddVehicleType" class="btn btn-primary">
+            Add Vehicle Type
+        </a>
+    </div>
+
+    @Html.Partial("~/Views/Partials/Validation.cshtml")
+
+</div>
+
+<table class="table table-striped my-5">
+    <thead>
+        <tr>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.ParkSize)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParkSize)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

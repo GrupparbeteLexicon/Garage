@@ -1,12 +1,23 @@
 ﻿using Garage.Extensions;
+using Garage.Models;
+using System.Drawing;
 
 namespace Garage.ViewModels
 {
     public class VehicleTypeViewModel
 	{
-        public float Capacity { get; } = CountPlacesExtension.Capacity; // avoiding name collision
-        public int VehiclesParked { get; set; } = 0;
-        public string PlacesLeft { get;set; } = string.Empty;
-        public bool GarageIsFull { get; set; } = false;
-    }
+
+		public VehicleTypeViewModel(VehicleType vehicleType)
+		{
+			ArgumentNullException.ThrowIfNull(vehicleType);
+			Id = vehicleType.Id;
+			Name = vehicleType.Name;
+			ParkSize = ""; // TODO: Map to vehicleType ParkSize
+		}
+
+		public int Id { get; }
+		public string Name { get; }
+		public string ParkSize { get; }
+
+	}
 }

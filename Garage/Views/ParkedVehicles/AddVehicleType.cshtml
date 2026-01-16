@@ -1,0 +1,32 @@
+﻿@using Garage.Extensions
+@model IEnumerable<Garage.ViewModels.VehicleTypeViewModel>
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Add Vehicle Type</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="VehicleType">
+            <partial name="_AddVehicleTypeForm" model="Model" />
+            <div class="form-group">
+                <input type="submit" value="Park" class="btn btn-primary my-3" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

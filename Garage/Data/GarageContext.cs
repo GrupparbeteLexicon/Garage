@@ -27,9 +27,27 @@ public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDb
             .WithOne(p => p.ParkedVehicle)              
             .HasForeignKey<Vehicle>(v => v.ParkingSpotId)  
             .OnDelete(DeleteBehavior.SetNull);
-    }
 
-    // Seed data
+        modelBuilder.Entity<VehicleType>().HasData(
+            new VehicleType()
+            {
+                Id = 1,
+                Name = "Car"
+            },
+			new VehicleType()
+			{
+				Id = 2,
+				Name = "Motorcycle"
+			},
+			new VehicleType()
+			{
+				Id = 3,
+				Name = "Bus"
+			}
+			);
+	}
+
+    //Seed data
     // create 5 different vehicles with different VehicleType, Registration, Color, Brand, Model, Wheels, and ParkTime
     // Use realistic data for each vehicle
     // Make sure the Ids are unique and start from 1

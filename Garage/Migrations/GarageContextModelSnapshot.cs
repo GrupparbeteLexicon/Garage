@@ -208,6 +208,26 @@ namespace Garage.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VehicleType");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Car",
+                            VehicleSize = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Motorcycle",
+                            VehicleSize = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Bus",
+                            VehicleSize = 0
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

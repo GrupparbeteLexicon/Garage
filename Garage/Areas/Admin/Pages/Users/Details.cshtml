@@ -28,7 +28,7 @@
             Total Revenue
         </dt>
         <dd class="col-md-9">
-            @Model.Vehicles.Sum(s => 0)
+            @Model.Vehicles.Sum(s => (DateTime.Now - s.ParkTime)?.ParkedTimeToPrice())
         </dd>
     </dl>
     <a asp-page="./List">Back</a>
@@ -80,4 +80,3 @@
     }
     <a asp-page="./List">Back</a>
 </div>
-

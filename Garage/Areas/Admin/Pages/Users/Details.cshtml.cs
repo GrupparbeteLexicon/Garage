@@ -1,7 +1,5 @@
 #nullable disable
-using Garage.Data;
 using Garage.Models;
-using Garage.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

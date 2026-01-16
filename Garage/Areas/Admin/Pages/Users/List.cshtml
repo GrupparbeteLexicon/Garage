@@ -1,4 +1,5 @@
 @page
+@using Garage.Extensions
 @model ListModel
 
 @{
@@ -90,10 +91,10 @@
                 @user.Name
             </td>
             <td>
-                @user.VehicleCount
+                @user.Vehicles.Count()
             </td>
             <td>
-                @user.TotalRevenue
+                @user.Vehicles.Sum(s => (DateTime.Now - s.ParkingSpot?.ParkTime)?.ParkedTimeToPrice())
             </td>
             <td>
                 <a asp-page="./Details" asp-route-id="@user.Id">Details</a>

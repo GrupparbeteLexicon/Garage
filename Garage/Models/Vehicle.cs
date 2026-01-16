@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Garage.Models;
 
@@ -17,8 +18,9 @@ public class Vehicle
     public required int OwnerId { get; set; }
 
     public required ApplicationUser Owner { get; set; }
-
     public int? ParkingSpotId { get; set; }
+
+    [ForeignKey(nameof(ParkingSpotId))]
     public ParkingSpot? ParkingSpot { get; set; }
 
     [StringLength(6)]

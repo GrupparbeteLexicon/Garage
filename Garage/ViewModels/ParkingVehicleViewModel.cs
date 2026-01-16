@@ -8,7 +8,7 @@ namespace Garage.ViewModels
         public int Id { get; }
 
         [Display(Name = "Vehicle Type")]
-        public VehicleTypeModel VehicleType { get; }
+        public VehicleType VehicleType { get; }
 
         [Display(Name = "Registration Number")]
         public string Registration { get;}
@@ -21,9 +21,6 @@ namespace Garage.ViewModels
 
         [Display(Name = "Model")]
         public string Model { get;}
-
-        [Display(Name = "Number of Wheels")]
-        public int Wheels { get;}
 
         [Display(Name = "Parked Since")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}")]
@@ -38,12 +35,11 @@ namespace Garage.ViewModels
             Id = vehicle.Id;
             Registration = vehicle.Registration;
             VehicleType = vehicle.VehicleType;
-            ParkTime = vehicle.ParkTime;
+            ParkTime = vehicle.ParkingSpot.ParkTime;
             Color = vehicle.Color;
             Brand = vehicle.Brand;
             Model = vehicle.Model;
-            Wheels = vehicle.Wheels;
-            ParkedDuration = DateTime.Now - vehicle.ParkTime;
+            ParkedDuration = DateTime.Now - ParkTime;
         }
     }
 }

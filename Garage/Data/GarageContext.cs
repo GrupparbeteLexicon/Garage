@@ -21,6 +21,7 @@ public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDb
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Vehicle>()
             .HasOne(v => v.ParkingSpot)          
             .WithOne(p => p.ParkedVehicle)              

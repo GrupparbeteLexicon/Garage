@@ -15,9 +15,11 @@ public class Vehicle
 
     public required VehicleType VehicleType { get; set; }
 
-    public required int OwnerId { get; set; }
+    public required string OwnerId { get; set; }
 
+    [ForeignKey(nameof(OwnerId))]
     public required ApplicationUser Owner { get; set; }
+
     public int? ParkingSpotId { get; set; }
 
     [ForeignKey(nameof(ParkingSpotId))]

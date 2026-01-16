@@ -19,7 +19,7 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index(string search, VehicleTypeModel? type = null)
+        public async Task<IActionResult> Index(string search, VehicleType? type = null)
         {
             var query = _context.ParkedVehicle.AsQueryable();
 
@@ -55,16 +55,16 @@ namespace Garage.Controllers
                 HourlyRate = PriceExtentions.HourlyRate, // TODO: Move to configuration or database
                 Currency = PriceExtentions.Currency, // TODO: Move to configuration or database
                 TotalParkedTime = _context.ParkedVehicle
-                    .Select(s => now - s.ParkTime)
+                    .Select(s => now - s.ParkingSpot.ParkTime)
                     .ToList()
                     .Sum(s => (decimal)s.TotalHours),
                 TotalRevenue = _context.ParkedVehicle
-                    .Select(s => (now - s.ParkTime).ParkedTimeToPrice())
+                    .Select(s => (now - s.ParkingSpot.ParkTime).ParkedTimeToPrice())
                     .ToList()
                     .Sum(s => s),
                 VehicleTypeCounts = _context.ParkedVehicle
                     .GroupBy(v => v.VehicleType)
-                    .ToDictionary(g => g.Key.GetDisplayName(), g => g.Count()),
+                    .ToDictionary(g => g.Key.Name, g => g.Count()),
             };
             return View(model);
         }
@@ -87,23 +87,23 @@ namespace Garage.Controllers
             return View(new ParkingVehicleViewModel(parkedVehicle));
         }
 
-        // GET: ParkedVehicles/Park
-        [HttpGet, ActionName("Park")]
-        public IActionResult Create()
-        {
-            ParkedVehicle parkedVehicle = new ParkedVehicle();
-            parkedVehicle.ParkTime = DateTime.Now;
+   //     // GET: ParkedVehicles/Park
+   //     [HttpGet, ActionName("Park")]
+   //     public IActionResult Create()
+   //     {
+   //         Vehicle parkedVehicle = new Vehicle();
+   //         parkedVehicle.ParkingSpot.ParkTime = DateTime.Now;
 
-			var query = _context.ParkedVehicle.AsQueryable();
-            float placesUsed = CountPlaces(query);
-            bool garageIsFull = placesUsed > Capacity;
+			//var query = _context.ParkedVehicle.AsQueryable();
+   //         float placesUsed = CountPlaces(query);
+   //         bool garageIsFull = placesUsed > Capacity;
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
-            viewModel.GarageIsFull = garageIsFull;
-            viewModel.DisableEditParkTime = true;
+   //         CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+   //         viewModel.GarageIsFull = garageIsFull;
+   //         viewModel.DisableEditParkTime = true;
 
-			return View(viewModel);
-        }
+			//return View(viewModel);
+   //     }
 
 
 		// POST: ParkedVehicles/Park
@@ -111,7 +111,7 @@ namespace Garage.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost, ActionName("Park")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] Vehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
             var query = _context.ParkedVehicle.AsQueryable();
@@ -127,15 +127,16 @@ namespace Garage.Controllers
             {
                 try
                 {
-                    _context.Add(new ParkedVehicle
+                    _context.Add(new Vehicle
                     {
+                        OwnerId = parkedVehicle.OwnerId,
+                        Owner = parkedVehicle.Owner,
+                        VehicleTypeId = parkedVehicle.VehicleTypeId,
                         VehicleType = parkedVehicle.VehicleType,
                         Registration = parkedVehicle.Registration.ToUpper(),
                         Color = parkedVehicle.Color,
                         Brand = parkedVehicle.Brand,
                         Model = parkedVehicle.Model,
-                        Wheels = parkedVehicle.Wheels,
-                        ParkTime = DateTime.Now
                     });
 
                     await _context.SaveChangesAsync();
@@ -180,7 +181,7 @@ namespace Garage.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Edit(int id, Vehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, parkedVehicle.Id);
             var query = _context.ParkedVehicle.AsQueryable();
@@ -206,8 +207,7 @@ namespace Garage.Controllers
                             .SetProperty(p => p.Registration, parkedVehicle.Registration.ToUpper())
                             .SetProperty(p => p.Color, parkedVehicle.Color)
                             .SetProperty(p => p.Brand, parkedVehicle.Brand)
-                            .SetProperty(p => p.Model, parkedVehicle.Model)
-                            .SetProperty(p => p.Wheels, parkedVehicle.Wheels));
+                            .SetProperty(p => p.Model, parkedVehicle.Model));
 
                     await _context.SaveChangesAsync();
                 }
@@ -265,13 +265,13 @@ namespace Garage.Controllers
             if (parkedVehicle != null)
             {
                 DateTime now = DateTime.Now;
-                TimeSpan totalParkedTime = now - parkedVehicle.ParkTime;
+                TimeSpan totalParkedTime = now - parkedVehicle.ParkingSpot.ParkTime;
 
-                var receipt = new ReceiptViewModel
+                var receipt = new ReceiptViewModel 
                 {
                     Registration = parkedVehicle.Registration,
                     VehicleType = parkedVehicle.VehicleType,
-                    ParkTime = parkedVehicle.ParkTime,
+                    ParkTime = parkedVehicle.ParkingSpot.ParkTime,
                     LeaveTime = now,
                     TotalParkedTime = totalParkedTime,
                     TotalPrice = PriceExtentions.CalculateCost(totalParkedTime),
@@ -299,7 +299,7 @@ namespace Garage.Controllers
                 .Any(e => e.Registration == registration);
         }
 
-        private CreateOrEditViewModel GenerateCreateOrEditViewModel(ParkedVehicle parkedVehicle, float placesLeft)
+        private CreateOrEditViewModel GenerateCreateOrEditViewModel(Vehicle parkedVehicle, float placesLeft)
         {
             var vehicleItemList = GetSelectItemsList(placesLeft);
 

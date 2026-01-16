@@ -1,0 +1,77 @@
+@page "{id}"
+@using Garage.Extensions
+@model DetailsModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+
+<div>
+    <h4>@Model.Name</h4>
+    <dl class="row form-group">
+        <dt class="col-md-3">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-md-9">
+            @Model.Name
+        </dd>
+        <dt class="col-md-3">
+            Total Vehicles
+        </dt>
+        <dd class="col-md-9">
+            @Model.Vehicles.Count()
+        </dd>
+        <dt class="col-md-3">
+            Total Revenue
+        </dt>
+        <dd class="col-md-9">
+            @Model.Vehicles.Sum(s => (DateTime.Now - s.ParkTime).ParkedTimeToPrice())
+        </dd>
+    </dl>
+    <a asp-page="./List">Back</a>
+</div>
+
+<hr />
+<div>
+    <h4>Vehicles</h4>
+    <table class="table table-striped my-5">
+        <thead>
+        <tr>
+            <th scope="col">
+                Registration Number
+            </th>
+            <th scope="col">
+                Vehicle Type
+            </th>
+            <th scope="col">
+                Park Time
+            </th>
+            <th scope="col">
+                Revenue
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var vehicle in Model.Vehicles)
+        {
+            <tr>
+                <td>
+                    @vehicle.Registration
+                </td>
+                <td>
+                    @vehicle.VehicleType
+                </td>
+                <td>
+                    @vehicle.ParkTime
+                </td>
+                <td>
+                    @((DateTime.Now - vehicle.ParkTime).ParkedTimeToPrice())
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <a asp-page="./List">Back</a>
+</div>

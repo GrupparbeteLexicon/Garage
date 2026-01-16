@@ -11,11 +11,11 @@ public class ParkingSpot
 
     public int? ParkedVehicleID { get; set;}
 
-    public ParkedVehicle? ParkedVehicle { get; set; }
+    public Vehicle? ParkedVehicle { get; set; }
 
-    public int ParkingSpotSize { get; set; }
+    public required int ParkingSpotSize { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     public bool Blocked { get; set; } = false;
 

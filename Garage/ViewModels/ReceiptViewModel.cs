@@ -5,7 +5,7 @@ namespace Garage.ViewModels
     public class ReceiptViewModel
     {
         public string Registration { get; set; } = string.Empty;
-        public VehicleTypeModel VehicleType { get; set; }
+        public VehicleType VehicleType { get; set; }
         public DateTime? ParkTime { get; set; }
         public DateTime? LeaveTime { get; set; }
         public TimeSpan TotalParkedTime { get; set; }

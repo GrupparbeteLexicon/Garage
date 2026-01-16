@@ -69,6 +69,29 @@ namespace Garage.Controllers
             return View(model);
         }
 
+        // GET: ParkedVehicles/Manage
+        public async Task<IActionResult> Manage(string search, VehicleType? type = null)
+        {
+            var query = _context.ParkedVehicle.AsQueryable();
+
+            ViewData["Search"] = search;
+            ViewData["Type"] = type;
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(v => v.Registration.Contains(search));
+            }
+            if (type != null)
+            {
+                query = query.Where(v => v.VehicleType == type);
+            }
+
+            var vehicles = await query
+                .Select(v => new ParkingVehicleViewModel(v))
+                .ToListAsync();
+            return View(vehicles);
+        }
+
         // GET: ParkedVehicles/Details/5
         public async Task<IActionResult> Details(int? id)
         {

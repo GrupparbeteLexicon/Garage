@@ -3,25 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Garage.Models;
 
-public enum VehicleType {
-    [Display(Name = "Car")]
-    CAR,
+public class VehicleType
+{
+	public string Name { get; set; }
+	public int Id { get; set; }
 
-    [Display(Name = "Motorcycle")]
-    MOTORCYCLE,
-
-    [Display(Name = "ATV")]
-    ATV,
-
-    [Display(Name = "Bus")]
-    BUS,
-
-    [Display(Name = "Truck")]
-    TRUCK,
-
-    [Display(Name = "Airplane")]
-    AIRPLANE,
-
-    [Display(Name = "Boat")]
-    BOAT
 }

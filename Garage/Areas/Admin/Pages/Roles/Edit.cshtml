@@ -1,0 +1,24 @@
+@page "{name}"
+@model EditModel
+
+@{
+    ViewData["Title"] = "Edit Role";
+}
+
+<h3>@ViewData["Title"]</h3>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="RoleName" />
+            <div class="form-group">
+                <label asp-for="RoleName" class="control-label"></label>
+                <input asp-for="Input.Name" class="form-control" />
+                <span asp-validation-for="RoleName" class="text-danger"></span>
+            </div>
+            <button class="btn btn-primary my-4">Save</button>
+        </form>
+    </div>
+    <a asp-page="./List">Back</a>
+</div>

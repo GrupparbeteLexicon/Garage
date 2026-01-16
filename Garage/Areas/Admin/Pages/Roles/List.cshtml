@@ -1,0 +1,49 @@
+@page
+@using Garage.Constants
+@model RoleList
+
+@{
+    ViewData["Title"] = "Roles";
+}
+
+<h1>Role List</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <a class="btn btn-primary" asp-page="./Create">Add Role</a>
+    </div>
+</div>
+
+<partial name="_Validation"></partial>
+<table class="table table-striped my-5">
+    <thead>
+    <tr>
+        <th scope="col">
+            Name
+        </th>
+        <th scope="col">
+            Id
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var role in Model.Roles)
+    {
+        <tr>
+            <td>
+                @role.Name
+            </td>
+            <td>
+                @role.Id
+            </td>
+            <td>
+            @if (role.Name != UserRoles.Admin)
+            {
+                <a asp-page="./Edit" asp-route-name="@role.Name">Edit</a>
+            }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

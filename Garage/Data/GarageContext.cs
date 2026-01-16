@@ -16,6 +16,7 @@ public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDb
 {
     public DbSet<ParkedVehicle> ParkedVehicle { get; set; } = default!;
     public DbSet<ParkingSpot> ParkingSpots { get; set; } = default!;
+    public DbSet<VehicleType> VehicleType { get; set; } = default!;
 
     // Seed data
     // create 5 different vehicles with different VehicleType, Registration, Color, Brand, Model, Wheels, and ParkTime

@@ -33,17 +33,17 @@ public static class CountPlacesExtension
         return (float)placesUsed / 3; // Since 1 Place = 3 Units
     }
 
-    private static int GetPlaceSizeForVehicleType(VehicleType vehicleType)
+    private static int GetPlaceSizeForVehicleType(VehicleTypeModel vehicleType)
     {
         return vehicleType switch
         {
-            VehicleType.MOTORCYCLE => 1, // 1/3 Place
-            VehicleType.ATV => 3, // 1 Place
-            VehicleType.CAR => 3, // 1 Place
-            VehicleType.AIRPLANE => 9, // 3 Places
-            VehicleType.BOAT => 9, // 3 Places
-            VehicleType.BUS => 9, // 3 Places
-            VehicleType.TRUCK => 6, // 2 Places
+            VehicleTypeModel.MOTORCYCLE => 1, // 1/3 Place
+            VehicleTypeModel.ATV => 3, // 1 Place
+            VehicleTypeModel.CAR => 3, // 1 Place
+            VehicleTypeModel.AIRPLANE => 9, // 3 Places
+            VehicleTypeModel.BOAT => 9, // 3 Places
+            VehicleTypeModel.BUS => 9, // 3 Places
+            VehicleTypeModel.TRUCK => 6, // 2 Places
             _ => 1
         };
     }
@@ -56,8 +56,8 @@ public static class CountPlacesExtension
         {
             vehicleTypeList.Add(new SelectListItem
             {
-                Value = VehicleType.MOTORCYCLE.ToString(),
-                Text = VehicleType.MOTORCYCLE.GetDisplayName()
+                Value = VehicleTypeModel.MOTORCYCLE.ToString(),
+                Text = VehicleTypeModel.MOTORCYCLE.GetDisplayName()
             });
         }
 
@@ -65,14 +65,14 @@ public static class CountPlacesExtension
         {
             vehicleTypeList.Add(new SelectListItem
             {
-                Value = VehicleType.ATV.ToString(),
-                Text = VehicleType.ATV.GetDisplayName()
+                Value = VehicleTypeModel.ATV.ToString(),
+                Text = VehicleTypeModel.ATV.GetDisplayName()
             });
 
             vehicleTypeList.Add(new SelectListItem
             {
-                Value = VehicleType.CAR.ToString(),
-                Text = VehicleType.CAR.GetDisplayName()
+                Value = VehicleTypeModel.CAR.ToString(),
+                Text = VehicleTypeModel.CAR.GetDisplayName()
             });
         }
 
@@ -80,8 +80,8 @@ public static class CountPlacesExtension
         {
             vehicleTypeList.Add(new SelectListItem
             {
-                Value = VehicleType.TRUCK.ToString(),
-                Text = VehicleType.TRUCK.GetDisplayName()
+                Value = VehicleTypeModel.TRUCK.ToString(),
+                Text = VehicleTypeModel.TRUCK.GetDisplayName()
             });
         }
 
@@ -89,20 +89,20 @@ public static class CountPlacesExtension
         {
             vehicleTypeList.Add(new SelectListItem
             {
-                Value = VehicleType.AIRPLANE.ToString(),
-                Text = VehicleType.AIRPLANE.GetDisplayName()
+                Value = VehicleTypeModel.AIRPLANE.ToString(),
+                Text = VehicleTypeModel.AIRPLANE.GetDisplayName()
             });
 
             vehicleTypeList.Add(new SelectListItem
             {
-                Value = VehicleType.BOAT.ToString(),
-                Text = VehicleType.BOAT.GetDisplayName()
+                Value = VehicleTypeModel.BOAT.ToString(),
+                Text = VehicleTypeModel.BOAT.GetDisplayName()
             });
 
             vehicleTypeList.Add(new SelectListItem
             {
-                Value = VehicleType.BUS.ToString(),
-                Text = VehicleType.BUS.GetDisplayName()
+                Value = VehicleTypeModel.BUS.ToString(),
+                Text = VehicleTypeModel.BUS.GetDisplayName()
             });
         }
 

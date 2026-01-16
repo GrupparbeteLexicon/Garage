@@ -43,7 +43,15 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Blocked)
+                <form asp-action="ToggleBlocked" method="post" style="display:inline;">
+                    <input type="hidden" name="id" value="@item.Id" />
+                    <input type="checkbox"
+                            name="blocked"
+                            value="true"
+                            @(item.Blocked ? "checked" : "")
+                            onchange="this.form.submit()" />
+                    @Html.AntiForgeryToken()
+                </form>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ParkTime)

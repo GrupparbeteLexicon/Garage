@@ -25,7 +25,7 @@ namespace Garage.Controllers
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            var spots = _context.ParkingSpot
+            var spots = _context.ParkingSpots
                 .Include(p => p.ParkedVehicle)
                 .Select(p => new ParkingSpotViewModel(p))
                 .ToList();
@@ -42,7 +42,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            var parkingSpot = await _context.ParkingSpot
+            var parkingSpot = await _context.ParkingSpots
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkingSpot == null)
             {
@@ -82,7 +82,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            var parkingSpot = await _context.ParkingSpot.FindAsync(id);
+            var parkingSpot = await _context.ParkingSpots.FindAsync(id);
             if (parkingSpot == null)
             {
                 return NotFound();
@@ -133,7 +133,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            var parkingSpot = await _context.ParkingSpot
+            var parkingSpot = await _context.ParkingSpots
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkingSpot == null)
             {
@@ -148,10 +148,10 @@ namespace Garage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parkingSpot = await _context.ParkingSpot.FindAsync(id);
+            var parkingSpot = await _context.ParkingSpots.FindAsync(id);
             if (parkingSpot != null)
             {
-                _context.ParkingSpot.Remove(parkingSpot);
+                _context.ParkingSpots.Remove(parkingSpot);
             }
 
             await _context.SaveChangesAsync();
@@ -160,7 +160,20 @@ namespace Garage.Controllers
 
         private bool ParkingSpotExists(int id)
         {
-            return _context.ParkingSpot.Any(e => e.Id == id);
+            return _context.ParkingSpots.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> ToggleBlocked(int id)
+        {
+            var spot = await _context.ParkingSpots.FindAsync(id);
+            if (spot == null)
+                return NotFound();
+
+            spot.Blocked = !spot.Blocked;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

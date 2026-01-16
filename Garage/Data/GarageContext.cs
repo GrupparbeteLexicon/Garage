@@ -15,7 +15,7 @@ namespace Garage.Data;
 public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDbContext<ApplicationUser, IdentityRole, string>(options)
 {
     public DbSet<ParkedVehicle> ParkedVehicle { get; set; } = default!;
-    public DbSet<ParkingSpot> ParkingSpot { get; set; } = default!;
+    public DbSet<ParkingSpot> ParkingSpots { get; set; } = default!;
 
     // Seed data
     // create 5 different vehicles with different VehicleType, Registration, Color, Brand, Model, Wheels, and ParkTime

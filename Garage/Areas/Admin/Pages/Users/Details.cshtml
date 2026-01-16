@@ -1,4 +1,5 @@
 @page "{id}"
+@using Garage.Controllers
 @using Garage.Extensions
 @model DetailsModel
 @{
@@ -21,13 +22,13 @@
             Total Vehicles
         </dt>
         <dd class="col-md-9">
-            @Model.Vehicles.Count()
+            @Model.Vehicles.Count
         </dd>
         <dt class="col-md-3">
             Total Revenue
         </dt>
         <dd class="col-md-9">
-            @Model.Vehicles.Sum(s => (DateTime.Now - s.ParkTime).ParkedTimeToPrice())
+            @Model.Vehicles.Sum(s => 0)
         </dd>
     </dl>
     <a asp-page="./List">Back</a>
@@ -36,7 +37,7 @@
 <hr />
 <div>
     <h4>Vehicles</h4>
-    <table class="table table-striped my-5">
+    <table class="table table-striped mt-5">
         <thead>
         <tr>
             <th scope="col">
@@ -67,11 +68,16 @@
                     @vehicle.ParkTime
                 </td>
                 <td>
-                    @((DateTime.Now - vehicle.ParkTime).ParkedTimeToPrice())
+                    @((DateTime.Now - vehicle.ParkTime)?.ParkedTimeToPrice())
                 </td>
             </tr>
         }
         </tbody>
     </table>
+    @if (!Model.Vehicles.Any())
+    {
+        <p class="text-muted">This user do not own any vehicles yet.</p>
+    }
     <a asp-page="./List">Back</a>
 </div>
+

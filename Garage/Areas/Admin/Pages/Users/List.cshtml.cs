@@ -1,21 +1,27 @@
 #nullable disable
+using Garage.Data;
+using Garage.Extensions;
 using Garage.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garage.Areas.Admin.Pages.Users;
 
 public class ListModel : PageModel
 {
+    private readonly GarageContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
 
     public ListModel(
+        GarageContext context,
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager)
     {
+        _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
     }
@@ -30,7 +36,7 @@ public class ListModel : PageModel
         public required string Id { get; set; }
         public required string Name { get; set; }
         public required int VehicleCount { get; set; }
-        public required int TotalRevenue { get; set; }
+        public required decimal TotalRevenue { get; set; }
     }
 
     /// <summary>
@@ -47,11 +53,11 @@ public class ListModel : PageModel
         if (q != null)
             query = query.Where(s => s.UserName!.Contains(q));
 
-        var users = query.Select(s => new UserModel
+        var users = query.Include(s => s.OwnedVehicles).Select(s => new UserModel
         {
             Id = s.Id,
             Name = s.UserName ?? string.Empty,
-            VehicleCount = 0, // TODO: Add count from context
+            VehicleCount = s.OwnedVehicles.Count,
             TotalRevenue = 0, // TODO: Add revenue from context
         }).ToList();
 

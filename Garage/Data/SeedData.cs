@@ -18,23 +18,19 @@ public class SeedData
         if (context.Roles.Any())
             return;
 
-        List<string> defaultRoles = [
+        List<string> defaultRoles = new()
+        {
             UserRoles.Member,
             UserRoles.Admin,
-        ];
+        };
 
         await SeedRoles(defaultRoles);
 
-        var usersToAdd = new[]
-            {
-                (FirstName: "Admin", LastName: "Adminsson", Email: "admin@Garage.se", PersonalID: "800808-0123", Password: "Admin123!", Role: UserRoles.Admin),
-                (FirstName: "Member", LastName: "Membersson", Email: "member@garage.se", PersonalID: "800808-0124", Password: "Member123!", Role: UserRoles.Member)
-            };
-
-        var rolesToAssign = usersToAdd.Select(u => (u.Email, u.Role)).ToArray();
+        var usersToAdd = SeededUsers.Default;
 
         await SeedUsers(usersToAdd);
-        await AssignRoles(rolesToAssign);
+        await AssignRoles(usersToAdd);
+        await AddFullNameClaims(usersToAdd);
     }
 
     private static async Task SeedRoles(List<string> roles)
@@ -50,40 +46,48 @@ public class SeedData
         }
     }
 
-    private static async Task  SeedUsers((string firstName, string lastName, string email, string personalID, string password, string role)[] users)
+    private static async Task SeedUsers(IEnumerable<SeedUser> users)
     {
-        foreach (var (firstName, lastName, email, personalID, password, role) in users)
+        foreach (var seed in users)
         {
-            var userFound = await _userManager.FindByEmailAsync(email);
+            var userFound = await _userManager.FindByEmailAsync(seed.User.Email);
             if (userFound == null)
             {
-                userFound = new ApplicationUser
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    PersonalID = personalID,
-                    UserName = email,
-                    Email = email,
-                    EmailConfirmed = true
-                };
+                userFound = seed.User;
 
-                var result = await _userManager.CreateAsync(userFound, password);
+                var result = await _userManager.CreateAsync(userFound, seed.Password);
                 if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
             }
         }
     }
 
-    private static async Task AssignRoles((string email, string role)[] userRoles)
+    private static async Task AssignRoles(IEnumerable<SeedUser> userRoles)
     {
-        foreach (var (email, role) in userRoles)
+        foreach (var seed in userRoles)
         {
-            var userFound = await _userManager.FindByEmailAsync(email);
-            var isInRole = await _userManager.IsInRoleAsync(userFound, role);
+            var userFound = await _userManager.FindByEmailAsync(seed.User.Email);
+            var isInRole = await _userManager.IsInRoleAsync(userFound, seed.Role);
 
             if (!isInRole)
             {
-                var result = await _userManager.AddToRoleAsync(userFound, role);
+                var result = await _userManager.AddToRoleAsync(userFound, seed.Role);
                 if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+            }
+        }
+    }
+
+    private static async Task AddFullNameClaims(IEnumerable<SeedUser> users)
+    {
+        foreach (var seed in users)
+        {
+            var userFound = await _userManager.FindByEmailAsync(seed.User.Email);
+            var fullName = $"{userFound.FirstName} {userFound.LastName}";
+            var hasClaim = (await _userManager.GetClaimsAsync(userFound))
+                .Any(c => c.Type == "FullName" && c.Value == fullName);
+            if (!hasClaim)
+            {
+                var claimResult = await _userManager.AddClaimAsync(userFound, new System.Security.Claims.Claim("FullName", fullName));
+                if (!claimResult.Succeeded) throw new Exception(string.Join("\n", claimResult.Errors));
             }
         }
     }

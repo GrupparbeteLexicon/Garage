@@ -8,7 +8,7 @@ namespace Garage.ViewModels
     {
         public VehicleTypeModel SelectedVehicleType { get; set; }
         public SelectList VehicleTypeList { get; set; }
-        public ParkedVehicle? ParkedVehicle { get; set;  }
+        public Vehicle? ParkedVehicle { get; set;  }
         public bool DisableEditParkTime { get; set; } = false;
         public bool GarageIsFull { get; set; } = false;
     }

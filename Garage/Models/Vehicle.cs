@@ -1,0 +1,36 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace Garage.Models;
+
+[Index(nameof(Registration))]
+[Index(nameof(OwnerId))]
+[Index(nameof(ParkingSpotId))]
+public class Vehicle
+{
+    public int Id { get; set; }
+
+    public required int VehicleTypeId { get; set; }
+
+    public required VehicleType VehicleType { get; set; }
+
+    public required int OwnerId { get; set; }
+
+    public required ApplicationUser Owner { get; set; }
+
+    public int? ParkingSpotId { get; set; }
+    public ParkingSpot? ParkingSpot { get; set; }
+
+    [StringLength(6)]
+    public string Registration { get; set; } = string.Empty;
+    
+    [StringLength(20)]
+    public string Color { get; set; } = string.Empty;
+
+    [StringLength(20)]
+    public string Brand { get; set; } = string.Empty;
+
+    [StringLength(20)]
+    public string Model { get; set; } = string.Empty;
+
+}

@@ -19,7 +19,7 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index(string search, VehicleTypeModel? type = null)
+        public async Task<IActionResult> Index(string search, VehicleType? type = null)
         {
             var query = _context.ParkedVehicle.AsQueryable();
 
@@ -91,7 +91,7 @@ namespace Garage.Controllers
         [HttpGet, ActionName("Park")]
         public IActionResult Create()
         {
-            ParkedVehicle parkedVehicle = new ParkedVehicle();
+            Vehicle parkedVehicle = new Vehicle();
             parkedVehicle.ParkTime = DateTime.Now;
 
 			var query = _context.ParkedVehicle.AsQueryable();
@@ -111,7 +111,7 @@ namespace Garage.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost, ActionName("Park")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] Vehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
             var query = _context.ParkedVehicle.AsQueryable();
@@ -127,7 +127,7 @@ namespace Garage.Controllers
             {
                 try
                 {
-                    _context.Add(new ParkedVehicle
+                    _context.Add(new Vehicle
                     {
                         VehicleType = parkedVehicle.VehicleType,
                         Registration = parkedVehicle.Registration.ToUpper(),
@@ -180,7 +180,7 @@ namespace Garage.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ParkedVehicle parkedVehicle)
+        public async Task<IActionResult> Edit(int id, Vehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, parkedVehicle.Id);
             var query = _context.ParkedVehicle.AsQueryable();
@@ -299,7 +299,7 @@ namespace Garage.Controllers
                 .Any(e => e.Registration == registration);
         }
 
-        private CreateOrEditViewModel GenerateCreateOrEditViewModel(ParkedVehicle parkedVehicle, float placesLeft)
+        private CreateOrEditViewModel GenerateCreateOrEditViewModel(Vehicle parkedVehicle, float placesLeft)
         {
             var vehicleItemList = GetSelectItemsList(placesLeft);
 

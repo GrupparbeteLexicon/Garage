@@ -32,7 +32,7 @@ namespace Garage.ViewModels
         [Display(Name = "Parked For")]
         public TimeSpan ParkedDuration { get; }
 
-        public ParkingVehicleViewModel(ParkedVehicle vehicle)
+        public ParkingVehicleViewModel(Vehicle vehicle)
         {
             ArgumentNullException.ThrowIfNull(vehicle);
             Id = vehicle.Id;

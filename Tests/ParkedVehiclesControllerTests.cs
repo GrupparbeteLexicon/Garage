@@ -23,8 +23,8 @@ namespace Tests
 		{
 			// Add vehicles to the temporary database
 			using var context = GetDbContext();
-			context.ParkedVehicle.Add(new ParkedVehicle { Registration = "ABC123", Brand = "Volvo", Color = "Green", Model = "V70" });
-			context.ParkedVehicle.Add(new ParkedVehicle { Registration = "XYZ999", Brand = "Saab", Color = "Blue", Model = "9-5" });
+			context.ParkedVehicle.Add(new Vehicle { Registration = "ABC123", Brand = "Volvo", Color = "Green", Model = "V70" });
+			context.ParkedVehicle.Add(new Vehicle { Registration = "XYZ999", Brand = "Saab", Color = "Blue", Model = "9-5" });
 			await context.SaveChangesAsync();
 
 			var controller = new ParkedVehiclesController(context);
@@ -36,7 +36,7 @@ namespace Tests
 			var viewResult = Assert.IsType<ViewResult>(result);
 
 			// Verify that the ViewResult model is a list of vehicles
-			var model = Assert.IsAssignableFrom<IEnumerable<ParkedVehicle>>(viewResult.Model);
+			var model = Assert.IsAssignableFrom<IEnumerable<Vehicle>>(viewResult.Model);
 
 			// Verify that the searched registration is found in the temporary database
 			Assert.Equal("ABC123", model.First().Registration);
@@ -48,7 +48,7 @@ namespace Tests
 			using var context = GetDbContext();
 			var controller = new ParkedVehiclesController(context);
 
-			var vehicle = new ParkedVehicle
+			var vehicle = new Vehicle
 			{
 				Registration = "NEW123",
 				VehicleType = VehicleTypeModel.CAR,
@@ -71,12 +71,12 @@ namespace Tests
 		{
 			// Add a vehicle to the temporary database
 			using var context = GetDbContext();
-			context.ParkedVehicle.Add(new ParkedVehicle { Registration = "ABC123", Brand = "Volvo", Color = "Green", Model = "V70" });
+			context.ParkedVehicle.Add(new Vehicle { Registration = "ABC123", Brand = "Volvo", Color = "Green", Model = "V70" });
 			await context.SaveChangesAsync();
 
 			var controller = new ParkedVehiclesController(context);
 
-			var vehicle = new ParkedVehicle
+			var vehicle = new Vehicle
 			{
 				Registration = "DUP123",
 				VehicleType = VehicleTypeModel.CAR

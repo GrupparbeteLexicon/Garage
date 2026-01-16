@@ -14,7 +14,7 @@ namespace Garage.Data;
 
 public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDbContext<ApplicationUser, IdentityRole, string>(options)
 {
-    public DbSet<ParkedVehicle> ParkedVehicle { get; set; } = default!;
+    public DbSet<Vehicle> ParkedVehicle { get; set; } = default!;
     public DbSet<ParkingSpot> ParkingSpots { get; set; } = default!;
     public DbSet<VehicleType> VehicleType { get; set; } = default!;
 

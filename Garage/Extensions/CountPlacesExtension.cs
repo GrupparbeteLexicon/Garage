@@ -9,7 +9,7 @@ public static class CountPlacesExtension
 {
     public static float Capacity { get; } = 50f;
 
-    public static float CountPlaces(IQueryable<ParkedVehicle> vehicles)
+    public static float CountPlaces(IQueryable<Vehicle> vehicles)
     {
         int placesUsed = 0;
 

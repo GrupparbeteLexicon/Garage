@@ -70,7 +70,7 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles/Manage
-        public async Task<IActionResult> Manage(string search, VehicleType? type = null)
+        public async Task<IActionResult> Manage(string search, VehicleTypeModel? type = null)
         {
             var query = _context.ParkedVehicle.AsQueryable();
 

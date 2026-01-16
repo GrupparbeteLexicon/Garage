@@ -14,9 +14,20 @@ namespace Garage.Data;
 
 public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDbContext<ApplicationUser, IdentityRole, string>(options)
 {
-    public DbSet<ParkedVehicle> ParkedVehicle { get; set; } = default!;
+    public DbSet<Vehicle> ParkedVehicle { get; set; } = default!;
     public DbSet<ParkingSpot> ParkingSpots { get; set; } = default!;
     public DbSet<VehicleType> VehicleType { get; set; } = default!;
+
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Vehicle>()
+            .HasOne(v => v.ParkingSpot)          
+            .WithOne(p => p.ParkedVehicle)              
+            .HasForeignKey<Vehicle>(v => v.ParkingSpotId)  
+            .OnDelete(DeleteBehavior.SetNull);
+    }
 
     // Seed data
     // create 5 different vehicles with different VehicleType, Registration, Color, Brand, Model, Wheels, and ParkTime

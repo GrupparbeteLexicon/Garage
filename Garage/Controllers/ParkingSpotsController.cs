@@ -22,10 +22,16 @@ namespace Garage.Controllers
         }
 
         // GET: ParkingSpots
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ParkingSpot.Select(v => new ParkingSpotViewModel(v)).ToListAsync());
+            var spots = _context.ParkingSpot
+                .Include(p => p.ParkedVehicle)
+                .Select(p => new ParkingSpotViewModel(p))
+                .ToList();
+
+            return View(spots);
+
         }
 
         // GET: ParkingSpots/Details/5

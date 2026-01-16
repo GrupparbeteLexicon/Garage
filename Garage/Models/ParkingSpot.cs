@@ -4,12 +4,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Garage.Models;
 
 [Index(nameof(ParkTime))]
-[Index(nameof(Blocked), nameof(ParkedCarID))]
+[Index(nameof(Blocked), nameof(ParkedVehicleID))]
 public class ParkingSpot
 {
     public int Id { get; set; }
 
-    public int? ParkedCarID { get; set;}
+    public int? ParkedVehicleID { get; set;}
+
+    public ParkedVehicle? ParkedVehicle { get; set; }
 
     public int ParkingSpotSize { get; set; }
 

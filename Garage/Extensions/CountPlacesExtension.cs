@@ -4,18 +4,22 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 using Garage.ViewModels;
+using Garage.Data;
 
 namespace Garage.Extensions;
 
 public static class CountPlacesExtension
 {
-    public static float Capacity { get; } = 50f;
+    public static float GetCapacity(GarageContext context)
+    {
+        return context.ParkingSpots.Count();
+    }
 
     public static float CountPlaces(IQueryable<Vehicle> vehicles)
     {
         int placesUsed = 0;
 
-        int parkedVehiclesCount = vehicles.Where(v => v.ParkingSpotId != null).ToList().Count();
+        int parkedVehiclesCount = vehicles.Where(v => v.ParkingSpot != null).ToList().Count();
         
 
         foreach (var vehicle in vehicles)
@@ -23,7 +27,7 @@ public static class CountPlacesExtension
             placesUsed += vehicle.VehicleType.VehicleSize;
         }
 
-        return (float)placesUsed / 3; // Since 1 Place = 3 Units
+        return placesUsed / 3f; // Since 1 Place = 3 Units
     }
 
     public static float CountPlaces(IEnumerable<ParkingVehicleViewModel> vehicles)
@@ -35,13 +39,8 @@ public static class CountPlacesExtension
             placesUsed += vehicle.VehicleType.VehicleSize;
         }
 
-        return (float)placesUsed / 3; // Since 1 Place = 3 Units
+        return placesUsed / 3f; // Since 1 Place = 3 Units
     }
-
-    //private static int GetPlaceSizeForVehicleType(VehicleType vehicleType)
-    //{
-    //    return vehicleType.VehicleSize;
-    //}
 
     public static List<SelectListItem> GetSelectItemsList(float placesLeft)
     {

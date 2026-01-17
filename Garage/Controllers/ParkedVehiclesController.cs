@@ -3,6 +3,7 @@ using Garage.Extensions;
 using Garage.Migrations;
 using Garage.Models;
 using Garage.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace Garage.Controllers
     public class ParkedVehiclesController : Controller
     {
         private readonly GarageContext _context;
+        private static UserManager<ApplicationUser> _userManager = default!;
 
-        public ParkedVehiclesController(GarageContext context)
+        public ParkedVehiclesController(GarageContext context, IServiceProvider services)
         {
             _context = context;
+            _userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         }
 
         // GET: ParkedVehicles
@@ -39,7 +42,18 @@ namespace Garage.Controllers
             var vehicles = await query
                 .Select(v => new ParkingVehicleViewModel(v))
                 .ToListAsync();
-            return View(vehicles);
+
+            var placesUsed = CountPlaces(query);
+
+            ParkingIndexViewModel model = new ParkingIndexViewModel()
+            {
+                Capacity = GetCapacity(_context),
+                Vehicles = vehicles,
+                PlacesUsed = placesUsed,
+                PlacesLeft = ToMixedFraction(GetCapacity(_context) - CountPlaces(query)),
+            };
+
+            return View(model);
         }
 
         // GET: ParkedVehicles/Statistics
@@ -50,9 +64,9 @@ namespace Garage.Controllers
             ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
             {
                 
-                Capacity = (int)CountPlacesExtension.Capacity,
+                Capacity = (int)GetCapacity(_context),
                 PlacesUsed = (int)Math.Ceiling(count), // show whole places used
-                PlacesLeft = ToMixedFraction(CountPlacesExtension.Capacity - count),
+                PlacesLeft = ToMixedFraction(GetCapacity(_context) - count),
                 HourlyRate = PriceExtentions.HourlyRate, // TODO: Move to configuration or database
                 Currency = PriceExtentions.Currency, // TODO: Move to configuration or database
                 TotalParkedTime = _context.ParkedVehicle
@@ -73,26 +87,6 @@ namespace Garage.Controllers
         // GET: ParkedVehicles/Manage
         public async Task<IActionResult> Manage(string? search, int? vehicleTypeId)
         {
-            //var query = _context.ParkedVehicle.AsQueryable();
-
-            //ViewData["Search"] = search;
-            //ViewData["Type"] = type;
-
-            //if (!string.IsNullOrWhiteSpace(search))
-            //{
-            //    query = query.Where(v => v.Registration.Contains(search));
-            //}
-
-            //if (type != null)
-            //{
-            //    query = query.Where(v => v.VehicleType == type);
-            //}
-
-            //var vehicles = await query
-            //    .Select(v => new ManageVehicleViewModel(v))
-            //    .ToListAsync();
-
-            //return View(vehicles);
             var query = _context.ParkedVehicle
                 .Include(v => v.VehicleType)
                 .Include(v => v.ParkingSpot)
@@ -141,76 +135,142 @@ namespace Garage.Controllers
             return View(new ParkingVehicleViewModel(parkedVehicle));
         }
 
-   //     // GET: ParkedVehicles/Park
-   //     [HttpGet, ActionName("Park")]
-   //     public IActionResult Create()
-   //     {
-   //         Vehicle parkedVehicle = new Vehicle();
-   //         parkedVehicle.ParkingSpot.ParkTime = DateTime.Now;
-
-			//var query = _context.ParkedVehicle.AsQueryable();
-   //         float placesUsed = CountPlaces(query);
-   //         bool garageIsFull = placesUsed > Capacity;
-
-   //         CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
-   //         viewModel.GarageIsFull = garageIsFull;
-   //         viewModel.DisableEditParkTime = true;
-
-			//return View(viewModel);
-   //     }
-
-
-		// POST: ParkedVehicles/Park
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost, ActionName("Park")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleType,Registration,Color,Brand,Model,Wheels,ParkTime")] Vehicle parkedVehicle)
+        // GET: ParkedVehicles/Park
+        [HttpGet, ActionName("Park")]
+        public IActionResult Create()
         {
-            bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
+            SelectList vehicleTypes = new SelectList(_context.VehicleType, "Id", "Name");
+
             var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
-			CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+            float capacity = GetCapacity(_context);
 
-			if (parkedVehicle == null) 
+            var viewModel = new CreateOrEditViewModel
             {
-                 return Problem("Entity set 'GarageContext.ParkedVehicle'  is null.");
+                VehicleTypeList = vehicleTypes,
+                GarageIsFull = placesUsed > capacity
+            };
+
+            return View(viewModel);
+        }
+
+       // POST: ParkedVehicles/Park
+       [HttpPost, ActionName("Park")]
+       [ValidateAntiForgeryToken]
+        public IActionResult Create(CreateOrEditViewModel input)
+        {
+            if (!ModelState.IsValid)
+            {
+                input.VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name");
+                return View(input);
             }
 
-            if (ModelState.IsValid && isUnique)
+            var vehicleType = _context.VehicleType.Find(input.VehicleTypeId);
+
+            // Find current logged-in user
+            var owner = _userManager.GetUserAsync(User).Result;
+
+            // Find empty parking space
+            var parkingSpot = _context.ParkingSpots
+                .Where(ps => ps.ParkedVehicleID == null)
+                .FirstOrDefault();
+
+            var vehicle = new Vehicle
+            {
+                Registration = input.Registration,
+                Color = input.Color,
+                Brand = input.Brand,
+                Model = input.Model,
+                VehicleTypeId = input.VehicleTypeId,
+                VehicleType = vehicleType,
+                OwnerId = owner.Id,
+                Owner = owner,
+                //ParkingSpotId = parkingSpot.Id,
+                //ParkingSpot = parkingSpot!
+            };
+
+            if (parkingSpot == null)
+            {
+                ModelState.AddModelError("", "No available parking spots.");
+                input.VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name");
+                return View(input);
+            }
+
+            parkingSpot.ParkedVehicle = vehicle;
+            parkingSpot.ParkTime = DateTime.Now;
+
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Add(new Vehicle
-                    {
-                        OwnerId = parkedVehicle.OwnerId,
-                        Owner = parkedVehicle.Owner,
-                        VehicleTypeId = parkedVehicle.VehicleTypeId,
-                        VehicleType = parkedVehicle.VehicleType,
-                        Registration = parkedVehicle.Registration.ToUpper(),
-                        Color = parkedVehicle.Color,
-                        Brand = parkedVehicle.Brand,
-                        Model = parkedVehicle.Model,
-                    });
+                    _context.ParkedVehicle.Add(vehicle);
+                    _context.SaveChanges();
 
-                    await _context.SaveChangesAsync();
-                } catch (DbUpdateException ex)
-                {
-					ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
-					Console.WriteLine(ex.Message);
-                    return View(parkedVehicle);
                 }
-
-				TempData["SuccessMessage"] = $"Vehicle with Registration Number: {parkedVehicle.Registration.ToUpper()} parked successfully!";
-				return RedirectToAction(nameof(Index));
+                catch (DbUpdateException ex)
+                {
+                    ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
+                    Console.WriteLine(ex.Message);
+                    return View(input);
+                }
             }
-            else if (!isUnique)
-            {
-                ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
-			}
 
-			return View(viewModel);
+            return RedirectToAction("Index");
         }
+
+        //     // POST: ParkedVehicles/Park
+        //     // To protect from overposting attacks, enable the specific properties you want to bind to.
+        //     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //     [HttpPost, ActionName("Park")]
+        //     [ValidateAntiForgeryToken]
+        //     public async Task<IActionResult> Create([Bind("Id,VehicleTypeId,Registration,Color,Brand,Model")] Vehicle parkedVehicle)
+        //     //public async Task<IActionResult> Create(Vehicle parkedVehicle)
+        //     {
+        //         bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
+        //         var query = _context.ParkedVehicle.AsQueryable();
+        //         float placesUsed = CountPlaces(query);
+        //         CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
+
+        //         if (parkedVehicle == null)
+        //         {
+        //             return Problem("Entity set 'GarageContext.ParkedVehicle'  is null.");
+        //         }
+
+        //         if (ModelState.IsValid && isUnique)
+        //         {
+        //             try
+        //             {
+        //                 _context.Add(new Vehicle
+        //                 {
+        //                     OwnerId = parkedVehicle.OwnerId,
+        //                     Owner = parkedVehicle.Owner,
+        //                     VehicleTypeId = parkedVehicle.VehicleTypeId,
+        //                     VehicleType = parkedVehicle.VehicleType,
+        //                     Registration = parkedVehicle.Registration.ToUpper(),
+        //                     Color = parkedVehicle.Color,
+        //                     Brand = parkedVehicle.Brand,
+        //                     Model = parkedVehicle.Model,
+        //                 });
+
+        //                 await _context.SaveChangesAsync();
+        //             }
+        //             catch (DbUpdateException ex)
+        //             {
+        //                 ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
+        //                 Console.WriteLine(ex.Message);
+        //                 return View(parkedVehicle);
+        //             }
+
+        //             TempData["SuccessMessage"] = $"Vehicle with Registration Number: {parkedVehicle.Registration.ToUpper()} parked successfully!";
+        //             return RedirectToAction(nameof(Index));
+        //         }
+        //         else if (!isUnique)
+        //         {
+        //             ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
+        //         }
+
+        //         return View(viewModel);
+        //     }
 
         // GET: ParkedVehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -224,10 +284,9 @@ namespace Garage.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
-            var viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
-            viewModel.DisableEditParkTime = true;
+            var viewModel = GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
 
-			return View(viewModel);
+            return View(viewModel);
         }
 
         // POST: ParkedVehicles/Edit/5
@@ -287,7 +346,7 @@ namespace Garage.Controllers
                 }
             }
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
             return View(viewModel);
         }
 
@@ -360,8 +419,7 @@ namespace Garage.Controllers
             var viewModel = new CreateOrEditViewModel
             {
                 SelectedVehicleType = parkedVehicle.VehicleType,
-                VehicleTypeList = new SelectList(vehicleItemList, "Value", "Text"),
-                ParkedVehicle = parkedVehicle
+                VehicleTypeList = new SelectList(vehicleItemList, "Value", "Text")
             };
 
             return viewModel;

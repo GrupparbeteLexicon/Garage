@@ -10,7 +10,7 @@
 
         public float PlacesUsed { get; init; }
 
-        public float PlacesLeft => Capacity - PlacesUsed;
+        public string PlacesLeft { get; init; }
 
         public bool IsFull => PlacesUsed >= Capacity;
     }

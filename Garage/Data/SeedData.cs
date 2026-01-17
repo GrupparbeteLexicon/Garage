@@ -1,4 +1,3 @@
-using Garage.Constants;
 using Garage.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +17,13 @@ public class SeedData
 
         var rolesToAdd = SeededUsers.DefaultRoles;
         var usersToAdd = SeededUsers.Default;
+        var typesToAdd = SeededVehicleTypes.Default;
 
         await SeededUsers.SeedRoles(rolesToAdd, _roleManager);
         await SeededUsers.SeedUsers(usersToAdd, _userManager);
         await SeededUsers.AssignRoles(usersToAdd, _userManager);
         await SeededUsers.AddFullNameClaims(usersToAdd, _userManager);
+
+        await SeededVehicleTypes.SeedVehicleTypes(typesToAdd, context);
     }
 }

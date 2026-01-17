@@ -1,17 +1,18 @@
 #nullable disable
-using System.ComponentModel.DataAnnotations;
-using Garage.Constants;
+using Garage.Configuration.Garage.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
 
 namespace Garage.Areas.Admin.Pages.Roles;
 
-[Authorize(Roles = UserRoles.Admin)]
+[Authorize(Policy = "RequireAdmin")]
 public class EditModel : PageModel
 {
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IdentityOptionsConfig _identityOptions;
 
     public EditModel(RoleManager<IdentityRole> roleManager)
     {
@@ -34,7 +35,7 @@ public class EditModel : PageModel
         var role = await _roleManager.FindByNameAsync(name);
         if (role == null)
             return NotFound();
-        if (role.Name == UserRoles.Admin)
+        if (_identityOptions.ProtectedRoles.Contains(role.Name))
         {
             TempData["ErrorMessage"] = "Cannot change Admin role name.";
             return RedirectToPage("./List");
@@ -63,7 +64,7 @@ public class EditModel : PageModel
             return Page();
         }
 
-        if (RoleName == UserRoles.Admin)
+        if (_identityOptions.ProtectedRoles.Contains(RoleName))
         {
             TempData["ErrorMessage"] = "Cannot change Admin role name.";
             return RedirectToPage("./List");

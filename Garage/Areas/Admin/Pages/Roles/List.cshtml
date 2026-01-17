@@ -1,5 +1,4 @@
 @page
-@using Garage.Constants
 @model RoleList
 
 @{
@@ -38,7 +37,7 @@
                 @role.Id
             </td>
             <td>
-            @if (role.Name != UserRoles.Admin)
+            @if (User.IsInRole("Admin"))
             {
                 <a asp-page="./Edit" asp-route-name="@role.Name">Edit</a>
             }

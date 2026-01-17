@@ -1,4 +1,3 @@
-using Garage.Constants;
 using Garage.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -61,8 +60,7 @@ public static class SeededUsers
 
         foreach (var role in roles)
         {
-            if (await roleManager.RoleExistsAsync(role))
-                continue;
+            if (await roleManager.RoleExistsAsync(role)) continue;
 
             var result = await roleManager.CreateAsync(new IdentityRole(role));
             if (!result.Succeeded)

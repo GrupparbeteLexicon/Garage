@@ -52,7 +52,7 @@
             @Html.DisplayNameFor(model => model.ParkedDuration)
         </dt>
         <dd class = "col-sm-10">
-            @Model.ParkedDuration.ParkedDurationString()
+            @Model.ParkedDuration
         </dd>
     </dl>
     <a asp-action="Unpark" asp-route-id="@Model?.Id" class="btn btn-primary">Checkout</a>

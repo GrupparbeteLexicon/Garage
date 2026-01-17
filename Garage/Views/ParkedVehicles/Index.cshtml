@@ -1,5 +1,8 @@
-﻿@using Garage.Extensions
-@model IEnumerable<Garage.ViewModels.ParkingVehicleViewModel>;
+﻿@using Garage.ViewModels
+
+
+@* @model IEnumerable<Garage.ViewModels.ParkingVehicleViewModel>; *@
+@model ParkingIndexViewModel
 
 @{
     ViewData["Title"] = "Parked Vehicles";
@@ -10,7 +13,7 @@
 <div class="d-flex flex-column gap-2">
     <div class="d-flex flex-column flex-md-row align-items-center gap-2">
 
-        @if (CountPlacesExtension.CountPlaces(Model) > CountPlacesExtension.Capacity)
+        @if (Model.IsFull)
         {
             <button class="btn btn-danger" disabled>
                 Can't park vehicles
@@ -31,11 +34,11 @@
                        name="search"
                        placeholder="Search registration..."
                        value="@Context.Request.Query["search"]"
-                       @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
+                       @(!Model.Vehicles.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
 
                 <button type="submit"
                         class="btn btn-primary"
-                        @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>
+                        @(!Model.Vehicles.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>
                     Search
                 </button>
 
@@ -57,21 +60,21 @@
     <thead>
         <tr>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.VehicleType)
+                @Html.DisplayNameFor(model => model.Vehicles[0].VehicleType)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.Registration)
+                @Html.DisplayNameFor(model => model.Vehicles[0].Registration)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.ParkTime)
+                @Html.DisplayNameFor(model => model.Vehicles[0].ParkTime)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.ParkedDuration)
+                @Html.DisplayNameFor(model => model.Vehicles[0].ParkedDuration)
             </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Vehicles)
         {
             <tr>
                 <td>
@@ -84,7 +87,7 @@
                     @Html.DisplayFor(modelItem => item.ParkTime)
                 </td>
                 <td>
-                    @item.ParkedDuration.ParkedDurationString()
+                    @item.ParkedDuration
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
@@ -96,7 +99,7 @@
     </tbody>
 </table>
 
-@if (!Model.Any())
+@if (!Model.Vehicles.Any())
 {
     @if (string.IsNullOrWhiteSpace(ViewData["Search"] as string))
     {

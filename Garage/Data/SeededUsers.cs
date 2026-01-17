@@ -1,17 +1,30 @@
+using Garage.Constants;
+using Garage.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Garage.Constants;
-using Garage.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace Garage.Data;
 
 public sealed record SeedUser(ApplicationUser User, string Password, string Role);
 
+public sealed class UserRoles
+{
+    public const string Admin = "Admin";
+    public const string Member = "Member";
+}
+
 public static class SeededUsers
 {
+    public static readonly List<string> DefaultRoles = new()
+    {
+        UserRoles.Admin,
+        UserRoles.Member
+    };
+
     public static readonly IReadOnlyCollection<SeedUser> Default = new[]
     {
         new SeedUser(
@@ -41,6 +54,21 @@ public static class SeededUsers
             UserRoles.Member
         )
     };
+
+    public static async Task SeedRoles(List<string> roles, RoleManager<IdentityRole> roleManager)
+    {
+        if (roleManager.Roles.Any())  return;
+
+        foreach (var role in roles)
+        {
+            if (await roleManager.RoleExistsAsync(role))
+                continue;
+
+            var result = await roleManager.CreateAsync(new IdentityRole(role));
+            if (!result.Succeeded)
+                throw new Exception(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
+        }
+    }
 
     public static async Task SeedUsers(IEnumerable<SeedUser> users, UserManager<ApplicationUser> userManager)
     {

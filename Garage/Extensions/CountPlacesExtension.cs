@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
+using Garage.ViewModels;
+
 namespace Garage.Extensions;
 
 public static class CountPlacesExtension
@@ -13,6 +15,9 @@ public static class CountPlacesExtension
     {
         int placesUsed = 0;
 
+        int parkedVehiclesCount = vehicles.Where(v => v.ParkingSpotId != null).ToList().Count();
+        
+
         foreach (var vehicle in vehicles)
         {
             placesUsed += GetPlaceSizeForVehicleType(vehicle.VehicleType);
@@ -21,7 +26,7 @@ public static class CountPlacesExtension
         return (float)placesUsed / 3; // Since 1 Place = 3 Units
     }
 
-    public static float CountPlaces(IEnumerable<Garage.ViewModels.ParkingVehicleViewModel> vehicles)
+    public static float CountPlaces(IEnumerable<ParkingVehicleViewModel> vehicles)
     {
         int placesUsed = 0;
 

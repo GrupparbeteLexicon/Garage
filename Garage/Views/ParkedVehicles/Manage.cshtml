@@ -1,5 +1,5 @@
 ﻿@using Garage.Extensions
-@model IEnumerable<Garage.ViewModels.ParkingVehicleViewModel>;
+@model IEnumerable<Garage.ViewModels.ManageVehicleViewModel>;
 
 @{
     ViewData["Title"] = "Manage Parked Vehicles";
@@ -9,20 +9,6 @@
 
 <div class="d-flex flex-column gap-2">
     <div class="d-flex flex-column flex-md-row align-items-center gap-2">
-
-        @* @if (CountPlacesExtension.CountPlaces(Model) > CountPlacesExtension.Capacity)
-        {
-            <button class="btn btn-danger" disabled>
-                Can't park vehicles
-            </button>
-        }
-        else
-        {
-            <a asp-action="Park" class="btn btn-primary">
-                Park a new Vehicle
-            </a>
-        } *@
-
         <!-- Search form -->
         <form class="d-flex w-50 ms-auto" method="get">
             <!-- Här la vi till ms-auto -->
@@ -33,6 +19,19 @@
                        placeholder="Search registration..."
                        value="@Context.Request.Query["search"]"
                        @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
+
+                <select class="form-select"
+                        name="vehicleTypeId">
+                    <option value="">All vehicle types</option>
+
+                    @foreach (var type in (IEnumerable<VehicleType>)ViewData["VehicleTypes"]!)
+                    {
+                        <option value="@type.Id"
+                                selected="@(ViewData["Type"] != null && (int)ViewData["Type"] == type.Id)">
+                            @type.Name
+                        </option>
+                    }
+                </select>
 
                 <button type="submit"
                         class="btn btn-primary"
@@ -57,12 +56,17 @@
 <table class="table table-striped my-5">
     <thead>
         <tr>
-            @*<th scope="col">Name</th>*@
+            <td scope="col">
+                @Html.DisplayNameFor(model => model.Owner)
+            </td>
             <th scope="col">
                 @Html.DisplayNameFor(model => model.VehicleType)
             </th>
             <th scope="col">
                 @Html.DisplayNameFor(model => model.Registration)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.ParkingSpot)
             </th>
             <th scope="col">
                 @Html.DisplayNameFor(model => model.ParkTime)
@@ -76,12 +80,9 @@
         @foreach (var item in Model)
         {
             <tr>
-                @*
                 <td>
-                    @Html.DisplayFor(modelItem => item.Brand)
-                    @Html.DisplayFor(modelItem => item.Model)
+                    @Html.DisplayFor(modelItem => item.Owner)
                 </td>
-                *@
                 <td>
                     @Html.DisplayFor(modelItem => item.VehicleType)
                 </td>
@@ -89,10 +90,13 @@
                     @Html.DisplayFor(modelItem => item.Registration)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.ParkingSpot)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.ParkTime)
                 </td>
                 <td>
-                    @item.ParkedDuration.ParkedDurationString()
+                    @Html.DisplayFor(modelItem => item.ParkedDuration)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -25,7 +25,6 @@
 
         <!-- Search form -->
         <form class="d-flex w-50 ms-auto" method="get">
-            <!-- Här la vi till ms-auto -->
             <div class="input-group">
                 <input type="text"
                        class="form-control"
@@ -57,7 +56,6 @@
 <table class="table table-striped my-5">
     <thead>
         <tr>
-            @*<th scope="col">Name</th>*@
             <th scope="col">
                 @Html.DisplayNameFor(model => model.VehicleType)
             </th>
@@ -76,12 +74,6 @@
         @foreach (var item in Model)
         {
             <tr>
-                @*
-                <td>
-                    @Html.DisplayFor(modelItem => item.Brand)
-                    @Html.DisplayFor(modelItem => item.Model)
-                </td>
-                *@
                 <td>
                     @Html.DisplayFor(modelItem => item.VehicleType)
                 </td>

@@ -24,16 +24,16 @@ namespace Garage.Controllers
             HomeViewModel homeViewModel = new HomeViewModel();
 
             int vehiclesParked = query.Count();
-            float placesUsed = CountPlaces(query);
-            string placesLeft = ToMixedFraction(homeViewModel.Capacity - placesUsed);
+            //float placesUsed = CountPlaces(query);
+            //string placesLeft = ToMixedFraction(homeViewModel.Capacity - placesUsed);
 
             homeViewModel.VehiclesParked = vehiclesParked;
-            homeViewModel.PlacesLeft = placesLeft;
-            homeViewModel.GarageIsFull = placesUsed > homeViewModel.Capacity;
+            //homeViewModel.PlacesLeft = placesLeft;
+            //homeViewModel.GarageIsFull = placesUsed > homeViewModel.Capacity;
 
             return View(homeViewModel);
         }
-
+        -
         public IActionResult Privacy()
         {
             return View();

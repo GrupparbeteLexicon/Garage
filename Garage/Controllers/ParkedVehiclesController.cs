@@ -1,5 +1,6 @@
 ﻿using Garage.Data;
 using Garage.Extensions;
+using Garage.Migrations;
 using Garage.Models;
 using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -19,21 +20,21 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index(string search, VehicleType? type = null)
+        public async Task<IActionResult> Index(string search)
         {
             var query = _context.ParkedVehicle.AsQueryable();
 
             ViewData["Search"] = search;
-            ViewData["Type"] = type;
+            //ViewData["Type"] = type;
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(v => v.Registration.Contains(search));
             }
-            if (type != null)
-            {
-                query = query.Where(v => v.VehicleType == type);
-            }
+            //if (type != null)
+            //{
+            //    query = query.Where(v => v.VehicleType == type);
+            //}
 
             var vehicles = await query
                 .Select(v => new ParkingVehicleViewModel(v))
@@ -70,25 +71,55 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles/Manage
-        public async Task<IActionResult> Manage(string search, VehicleTypeModel? type = null)
+        public async Task<IActionResult> Manage(string? search, int? vehicleTypeId)
         {
-            var query = _context.ParkedVehicle.AsQueryable();
+            //var query = _context.ParkedVehicle.AsQueryable();
 
-            ViewData["Search"] = search;
-            ViewData["Type"] = type;
+            //ViewData["Search"] = search;
+            //ViewData["Type"] = type;
+
+            //if (!string.IsNullOrWhiteSpace(search))
+            //{
+            //    query = query.Where(v => v.Registration.Contains(search));
+            //}
+
+            //if (type != null)
+            //{
+            //    query = query.Where(v => v.VehicleType == type);
+            //}
+
+            //var vehicles = await query
+            //    .Select(v => new ManageVehicleViewModel(v))
+            //    .ToListAsync();
+
+            //return View(vehicles);
+            var query = _context.ParkedVehicle
+                .Include(v => v.VehicleType)
+                .Include(v => v.ParkingSpot)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(v => v.Registration.Contains(search));
             }
-            if (type != null)
+
+            if (vehicleTypeId.HasValue)
             {
-                query = query.Where(v => v.VehicleType == type);
+                query = query.Where(v => v.VehicleType.Id == vehicleTypeId.Value);
             }
 
             var vehicles = await query
-                .Select(v => new ParkingVehicleViewModel(v))
+                .Select(v => new ManageVehicleViewModel(v))
                 .ToListAsync();
+
+            ViewData["Search"] = search;
+            ViewData["Type"] = vehicleTypeId;
+
+            // 🔽 Vehicle types for dropdown
+            ViewData["VehicleTypes"] = await _context.VehicleType
+                .OrderBy(vt => vt.Name)
+                .ToListAsync();
+
             return View(vehicles);
         }
 

@@ -1,4 +1,5 @@
-﻿@model Garage.ViewModels.CreateOrEditViewModel;
+﻿@using Azure.Core
+@model Garage.ViewModels.CreateOrEditViewModel;
 
 @{
     ViewData["Title"] = "Edit";
@@ -25,11 +26,16 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-
+@if (User.IsInRole("Admin"))
+{
+    <div>
+        <a asp-action="Manage">Back to List</a>
+    </div>
+} else {
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

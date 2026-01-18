@@ -195,7 +195,7 @@ namespace Garage.Controllers
                 VehicleType = vehicleType,
                 OwnerId = owner.Id,
                 Owner = owner,
-                //ParkingSpotId = parkingSpot.Id,
+                ParkingSpotId = parkingSpot.Id,
                 ParkingSpot = parkingSpot
             };
 
@@ -228,75 +228,36 @@ namespace Garage.Controllers
             return RedirectToAction("Index");
         }
 
-        //     // POST: ParkedVehicles/Park
-        //     // To protect from overposting attacks, enable the specific properties you want to bind to.
-        //     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //     [HttpPost, ActionName("Park")]
-        //     [ValidateAntiForgeryToken]
-        //     public async Task<IActionResult> Create([Bind("Id,VehicleTypeId,Registration,Color,Brand,Model")] Vehicle parkedVehicle)
-        //     //public async Task<IActionResult> Create(Vehicle parkedVehicle)
-        //     {
-        //         bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
-        //         var query = _context.ParkedVehicle.AsQueryable();
-        //         float placesUsed = CountPlaces(query);
-        //         CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
-
-        //         if (parkedVehicle == null)
-        //         {
-        //             return Problem("Entity set 'GarageContext.ParkedVehicle'  is null.");
-        //         }
-
-        //         if (ModelState.IsValid && isUnique)
-        //         {
-        //             try
-        //             {
-        //                 _context.Add(new Vehicle
-        //                 {
-        //                     OwnerId = parkedVehicle.OwnerId,
-        //                     Owner = parkedVehicle.Owner,
-        //                     VehicleTypeId = parkedVehicle.VehicleTypeId,
-        //                     VehicleType = parkedVehicle.VehicleType,
-        //                     Registration = parkedVehicle.Registration.ToUpper(),
-        //                     Color = parkedVehicle.Color,
-        //                     Brand = parkedVehicle.Brand,
-        //                     Model = parkedVehicle.Model,
-        //                 });
-
-        //                 await _context.SaveChangesAsync();
-        //             }
-        //             catch (DbUpdateException ex)
-        //             {
-        //                 ModelState.AddModelError("", "Unable to save changes. \nMake sure all fields are correct.");
-        //                 Console.WriteLine(ex.Message);
-        //                 return View(parkedVehicle);
-        //             }
-
-        //             TempData["SuccessMessage"] = $"Vehicle with Registration Number: {parkedVehicle.Registration.ToUpper()} parked successfully!";
-        //             return RedirectToAction(nameof(Index));
-        //         }
-        //         else if (!isUnique)
-        //         {
-        //             ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
-        //         }
-
-        //         return View(viewModel);
-        //     }
-
         // GET: ParkedVehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) { return NotFound(); }
 
-            var query = _context.ParkedVehicle.AsQueryable();
-            float placesUsed = CountPlaces(query);
-
-            var vehicle = await _context.ParkedVehicle
-                .Where(v => v.OwnerId == _userManager.GetUserAsync(User).Result!.Id)
+            var query = _context.ParkedVehicle
                 .Include(v => v.VehicleType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .AsQueryable();
 
-            if (vehicle == null) { return NotFound(); }
+            if (User.IsInRole("Member"))
+            {
+                var userId = _userManager.GetUserAsync(User).Result!.Id;
+                query = query.Where(v => v.OwnerId == userId);
+            }
+
+           var vehicle = await query.FirstOrDefaultAsync(v => v.Id == id);
+
+            if (vehicle == null)
+            {
+                TempData["ErrorMessage"] = "Vehicle could not be edited.";
+
+                // go back to previous page if possible, otherwise fallback
+                // previous page could be member's vehicle lsit or manage vehicles page
+                if (Request.Headers["Referer"].Any()) return Redirect(Request.Headers["Referer"].ToString());
+
+                return RedirectToAction("Index"); // fallback
+            }
+
             float capacity = GetCapacity(_context);
+            float placesUsed = CountPlaces(query);
 
             var viewModel = GenerateEditViewModel(vehicle, GetCapacity(_context) - placesUsed);
 

@@ -6,7 +6,7 @@ namespace Garage.Models;
 
 [Index(nameof(Registration))]
 [Index(nameof(OwnerId))]
-//[Index(nameof(ParkingSpotId))]
+[Index(nameof(ParkingSpotId))]
 public class Vehicle
 {
     public int Id { get; set; }
@@ -20,9 +20,9 @@ public class Vehicle
     [ForeignKey(nameof(OwnerId))]
     public required ApplicationUser Owner { get; set; }
 
-    //public int? ParkingSpotId { get; set; }
+    public int? ParkingSpotId { get; set; }
 
-    //[ForeignKey(nameof(ParkingSpotId))]
+    [ForeignKey(nameof(ParkingSpotId))]
     public ParkingSpot? ParkingSpot { get; set; }
 
     [StringLength(6)]

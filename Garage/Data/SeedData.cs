@@ -18,6 +18,7 @@ public class SeedData
         var rolesToAdd = SeededUsers.DefaultRoles;
         var usersToAdd = SeededUsers.Default;
         var typesToAdd = SeededVehicleTypes.Default;
+        var parksingSpotsToAdd = SeededParkingSpots.Default;
 
         await SeededUsers.SeedRoles(rolesToAdd, _roleManager);
         await SeededUsers.SeedUsers(usersToAdd, _userManager);
@@ -25,5 +26,6 @@ public class SeedData
         await SeededUsers.AddFullNameClaims(usersToAdd, _userManager);
 
         await SeededVehicleTypes.SeedVehicleTypes(typesToAdd, context);
+        await SeededParkingSpots.SeedParkingSpots(parksingSpotsToAdd, context);
     }
 }

@@ -42,7 +42,17 @@ public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDb
 			new VehicleType()
 			{
 				Id = 3,
+				Name = "ATV"
+			},
+			new VehicleType()
+			{
+				Id = 3,
 				Name = "Bus"
+			},
+			new VehicleType()
+			{
+				Id = 3,
+				Name = "Truck"
 			}
 			);
 	}

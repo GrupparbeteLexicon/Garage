@@ -8,5 +8,6 @@ public class VehicleType
 	public string Name { get; set; } = string.Empty;
     public int Id { get; set; }
 	public int VehicleSize { get; set; }
+	public int ParkSize { get; set; }
 
 }

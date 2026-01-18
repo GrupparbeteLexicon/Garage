@@ -202,12 +202,44 @@ namespace Garage.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VehicleSize")
+                    b.Property<int>("ParkSize")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("VehicleType");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Car",
+                            ParkSize = 3
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Motorcycle",
+                            ParkSize = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "ATV",
+                            ParkSize = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Bus",
+                            ParkSize = 9
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Truck",
+                            ParkSize = 6
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

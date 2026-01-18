@@ -1,0 +1,14 @@
+﻿@model Garage.ViewModels.VehicleTypeViewModel;
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<div class="form-group">
+    <label asp-for="Name" class="control-label fw-bold"></label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="ParkSize" class="control-label fw-bold"></label>
+    <input asp-for="ParkSize" class="form-control" />
+    <span asp-validation-for="ParkSize" class="text-danger"></span>
+</div>

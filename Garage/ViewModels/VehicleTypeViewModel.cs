@@ -12,12 +12,12 @@ namespace Garage.ViewModels
 			ArgumentNullException.ThrowIfNull(vehicleType);
 			Id = vehicleType.Id;
 			Name = vehicleType.Name;
-			ParkSize = ""; // TODO: Map to vehicleType ParkSize
+			ParkSize = vehicleType.ParkSize;
 		}
 
 		public int Id { get; }
 		public string Name { get; }
-		public string ParkSize { get; }
+		public int ParkSize { get; }
 
 	}
 }

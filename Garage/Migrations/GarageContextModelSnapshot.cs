@@ -202,6 +202,9 @@ namespace Garage.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ParkSize")
+                        .HasColumnType("int");
+
                     b.Property<int>("VehicleSize")
                         .HasColumnType("int");
 
@@ -214,18 +217,21 @@ namespace Garage.Migrations
                         {
                             Id = 1,
                             Name = "Car",
+                            ParkSize = 0,
                             VehicleSize = 0
                         },
                         new
                         {
                             Id = 2,
                             Name = "Motorcycle",
+                            ParkSize = 0,
                             VehicleSize = 0
                         },
                         new
                         {
                             Id = 3,
                             Name = "Bus",
+                            ParkSize = 0,
                             VehicleSize = 0
                         });
                 });

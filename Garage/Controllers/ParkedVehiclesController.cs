@@ -81,24 +81,29 @@ namespace Garage.Controllers
 			return View(model);
 		}
 
-
-
-		[HttpPost, ActionName("AddVehicleType")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> AddVehicleType(
-	[Bind("Name,ParkSize")] VehicleType vm)
+		[HttpGet]
+		public IActionResult AddVehicleTypeForm()
 		{
+			// Pass a fresh empty ViewModel to the form
+			return View();
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> AddVehicleType([Bind("Name,ParkSize")] VehicleType vehicleType)
+		{
+			var vm = new VehicleTypeViewModel(vehicleType);
+
 			bool isUnique = VehicleTypeIsUnique(vm.Name, null);
 
 			if (!ModelState.IsValid || !isUnique)
 			{
 				if (!isUnique)
 				{
-					ModelState.AddModelError(
-						"Name",
-						"A vehicle type with this name already exists.");
+					ModelState.AddModelError("Name", "A vehicle type with this name already exists.");
 				}
 
+				// Return the same view with the invalid data so user can fix it
 				return View("AddVehicleTypeForm", vm);
 			}
 
@@ -112,26 +117,20 @@ namespace Garage.Controllers
 
 				await _context.SaveChangesAsync();
 
-				TempData["SuccessMessage"] =
-					$"Vehicle Type \"{vm.Name}\" added successfully!";
+				TempData["SuccessMessage"] = $"Vehicle Type \"{vm.Name}\" added successfully!";
+
+				return RedirectToAction("VehicleTypes");
 			}
 			catch (DbUpdateException ex)
 			{
-				ModelState.AddModelError(
-					"",
-					"Unable to save changes. Make sure all fields are correct.");
-
+				ModelState.AddModelError("", "Unable to save changes. Make sure all fields are correct.");
 				Console.WriteLine(ex.Message);
+
+				// Return view with the current data so user can retry
 				return View("AddVehicleTypeForm", vm);
 			}
-
-			return RedirectToAction("VehicleTypes");
 		}
 
-		public async Task<IActionResult> AddVehicleTypeForm()
-		{
-			return View();
-		}
 
 
 		// GET: ParkedVehicles/Details/5

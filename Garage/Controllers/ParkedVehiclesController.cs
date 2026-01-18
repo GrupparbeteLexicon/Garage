@@ -375,7 +375,8 @@ namespace Garage.Controllers
 
 		private CreateOrEditViewModel GenerateCreateOrEditViewModel(Vehicle parkedVehicle, float placesLeft)
 		{
-			var vehicleItemList = GetSelectItemsList(placesLeft);
+			//var vehicleItemList = GetSelectItemsList(placesLeft);
+			var vehicleItemList = GetVehicleTypesItems();
 
 			var viewModel = new CreateOrEditViewModel
 			{
@@ -385,6 +386,25 @@ namespace Garage.Controllers
 			};
 
 			return viewModel;
+		}
+
+		private List<SelectListItem> GetVehicleTypesItems()
+		{
+			var vehicleTypes = _context.VehicleType.ToList();
+			var vehicleTypesItems = new List<SelectListItem>();
+
+			foreach (var vehicleType in vehicleTypes) 
+			{
+				var vehicleTypesItem = new SelectListItem()
+				{
+					Value = vehicleType.Name,
+					Text = vehicleType.Name,
+				};
+
+				vehicleTypesItems.Add(vehicleTypesItem);
+			}
+
+			return vehicleTypesItems;
 		}
 	}
 }

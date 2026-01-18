@@ -1,10 +1,10 @@
-﻿using Garage.Models;
+﻿using Garage.Data;
+using Garage.Models;
+using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-
-using Garage.ViewModels;
-using Garage.Data;
 
 namespace Garage.Extensions;
 
@@ -20,9 +20,8 @@ public static class CountPlacesExtension
         int placesUsed = 0;
 
         int parkedVehiclesCount = vehicles.Where(v => v.ParkingSpot != null).ToList().Count();
-        
 
-        foreach (var vehicle in vehicles)
+        foreach (var vehicle in vehicles.Include(v => v.VehicleType))
         {
             placesUsed += vehicle.VehicleType.VehicleSize;
         }

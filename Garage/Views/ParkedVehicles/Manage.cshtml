@@ -1,5 +1,5 @@
 ﻿@using Garage.Extensions
-@model IEnumerable<Garage.ViewModels.ManageVehicleViewModel>;
+@model Garage.ViewModels.ManageViewModel;
 
 @{
     ViewData["Title"] = "Manage Parked Vehicles";
@@ -18,29 +18,20 @@
                        name="search"
                        placeholder="Search registration..."
                        value="@Context.Request.Query["search"]"
-                       @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
+                       @(!Model.Vehicles.Any() && string.IsNullOrWhiteSpace(Model.Search) ? "disabled" : "") />
 
-                <select class="form-select"
-                        name="vehicleTypeId">
-                    <option value="">All vehicle types</option>
-
-                    @foreach (var type in (IEnumerable<VehicleType>)ViewData["VehicleTypes"]!)
-                    {
-                        <option value="@type.Id"
-                                selected="@(ViewData["Type"] != null && (int)ViewData["Type"] == type.Id)">
-                            @type.Name
-                        </option>
-                    }
+                <select asp-for="VehicleTypeId" asp-items="Model.VehicleTypeList" class="form-select">
+                    <option value="0" selected disabled>--- Search by vehicle type ---</option>
                 </select>
 
                 <button type="submit"
                         class="btn btn-primary"
-                        @(!Model.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>
+                        @(!Model.Vehicles.Any() && string.IsNullOrWhiteSpace(Model.Search) ? "disabled" : "")>
                     Search
                 </button>
 
-                <a asp-action="Index"
-                   class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) && ViewData["Type"] == null ? "disabled" : "")">
+                <a asp-action="Manage"
+                   class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(Model.Search) && Model.VehicleTypeId == null ? "disabled" : "")">
                     Clear
                 </a>
             </div>
@@ -56,28 +47,28 @@
 <table class="table table-striped my-5">
     <thead>
         <tr>
-            <td scope="col">
-                @Html.DisplayNameFor(model => model.Owner)
-            </td>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.VehicleType)
+                @Html.DisplayNameFor(model => model.Vehicles[0].Owner)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.Registration)
+                @Html.DisplayNameFor(model => model.Vehicles[0].VehicleType)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.ParkingSpot)
+                @Html.DisplayNameFor(model => model.Vehicles[0].Registration)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.ParkTime)
+                @Html.DisplayNameFor(model => model.Vehicles[0].ParkingSpot)
             </th>
             <th scope="col">
-                @Html.DisplayNameFor(model => model.ParkedDuration)
+                @Html.DisplayNameFor(model => model.Vehicles[0].ParkTime)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Vehicles[0].ParkedDuration)
             </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Vehicles)
         {
             <tr>
                 <td>
@@ -108,9 +99,9 @@
     </tbody>
 </table>
 
-@if (!Model.Any())
+@if (!Model.Vehicles.Any())
 {
-    @if (string.IsNullOrWhiteSpace(ViewData["Search"] as string))
+    @if (string.IsNullOrWhiteSpace(Model.Search))
     {
         <p class="text-muted">No vehicles currently parked.</p>
     }

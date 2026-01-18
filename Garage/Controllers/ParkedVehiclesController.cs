@@ -23,21 +23,23 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index(string search)
+        public async Task<IActionResult> Index(string? search, int? vehicleTypeId)
         {
-            var query = _context.ParkedVehicle.AsQueryable();
-
-            ViewData["Search"] = search;
-            //ViewData["Type"] = type;
+            var query = _context.ParkedVehicle
+                .Where(v => v.Owner.Email == User.Identity.Name)
+                .Include(v => v.VehicleType)
+                .Include(v => v.ParkingSpot)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(v => v.Registration.Contains(search));
             }
-            //if (type != null)
-            //{
-            //    query = query.Where(v => v.VehicleType == type);
-            //}
+
+            if (vehicleTypeId.HasValue)
+            {
+                query = query.Where(v => v.VehicleType.Id == vehicleTypeId.Value);
+            }
 
             var vehicles = await query
                 .Select(v => new ParkingVehicleViewModel(v))
@@ -51,6 +53,9 @@ namespace Garage.Controllers
                 Vehicles = vehicles,
                 PlacesUsed = placesUsed,
                 PlacesLeft = ToMixedFraction(GetCapacity(_context) - CountPlaces(query)),
+                Search = search,
+                VehicleTypeId = vehicleTypeId,
+                VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name")
             };
 
             return View(model);
@@ -88,6 +93,7 @@ namespace Garage.Controllers
         public async Task<IActionResult> Manage(string? search, int? vehicleTypeId)
         {
             var query = _context.ParkedVehicle
+                .Include(v => v.Owner)
                 .Include(v => v.VehicleType)
                 .Include(v => v.ParkingSpot)
                 .AsQueryable();
@@ -106,15 +112,15 @@ namespace Garage.Controllers
                 .Select(v => new ManageVehicleViewModel(v))
                 .ToListAsync();
 
-            ViewData["Search"] = search;
-            ViewData["Type"] = vehicleTypeId;
+            var viewModel = new ManageViewModel
+            {
+                Vehicles = vehicles,
+                VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name"),
+                VehicleTypeId = vehicleTypeId,
+                Search = search
+            };
 
-            // 🔽 Vehicle types for dropdown
-            ViewData["VehicleTypes"] = await _context.VehicleType
-                .OrderBy(vt => vt.Name)
-                .ToListAsync();
-
-            return View(vehicles);
+            return View(viewModel);
         }
 
         // GET: ParkedVehicles/Details/5
@@ -126,6 +132,8 @@ namespace Garage.Controllers
             }
 
             var parkedVehicle = await _context.ParkedVehicle
+                .Include(v => v.VehicleType)
+                .Include(v => v.ParkingSpot)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (parkedVehicle == null)
             {
@@ -159,6 +167,8 @@ namespace Garage.Controllers
        [ValidateAntiForgeryToken]
         public IActionResult Create(CreateOrEditViewModel input)
         {
+            Console.WriteLine(">>> POST Park HIT <<<");
+
             if (!ModelState.IsValid)
             {
                 input.VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name");
@@ -186,7 +196,7 @@ namespace Garage.Controllers
                 OwnerId = owner.Id,
                 Owner = owner,
                 //ParkingSpotId = parkingSpot.Id,
-                //ParkingSpot = parkingSpot!
+                ParkingSpot = parkingSpot
             };
 
             if (parkingSpot == null)
@@ -275,16 +285,20 @@ namespace Garage.Controllers
         // GET: ParkedVehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (id == null) { return NotFound(); }
+
             var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
 
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var vehicle = await _context.ParkedVehicle
+                .Where(v => v.OwnerId == _userManager.GetUserAsync(User).Result!.Id)
+                .Include(v => v.VehicleType)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            var parkedVehicle = await _context.ParkedVehicle.FindAsync(id);
-            var viewModel = GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
+            if (vehicle == null) { return NotFound(); }
+            float capacity = GetCapacity(_context);
+
+            var viewModel = GenerateEditViewModel(vehicle, GetCapacity(_context) - placesUsed);
 
             return View(viewModel);
         }
@@ -296,7 +310,7 @@ namespace Garage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Vehicle parkedVehicle)
         {
-            bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, parkedVehicle.Id);
+            //bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, parkedVehicle.Id);
             var query = _context.ParkedVehicle.AsQueryable();
             float placesUsed = CountPlaces(query);
 
@@ -305,7 +319,7 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid && isUnique)
+            if (ModelState.IsValid)
             {
                 try
                 {
@@ -315,6 +329,7 @@ namespace Garage.Controllers
 
                     _context.ParkedVehicle
                         .Where(p => p.Id == parkedVehicle.Id)
+                        .Include(p => p.VehicleType)
                         .ExecuteUpdate(setters => setters
                             .SetProperty(p => p.VehicleType, parkedVehicle.VehicleType)
                             .SetProperty(p => p.Registration, parkedVehicle.Registration.ToUpper())
@@ -338,15 +353,16 @@ namespace Garage.Controllers
 
 				TempData["SuccessMessage"] = $"Vehicle edited successfully!";
 				return RedirectToAction(nameof(Index));
-            } else
-            {
-                if (!isUnique)
-                {
-                    ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
-                }
-            }
+            } 
+            //else
+            //{
+            //    if (!isUnique)
+            //    {
+            //        ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
+            //    }
+            //}
 
-            CreateOrEditViewModel viewModel = GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
+            CreateOrEditViewModel viewModel = GenerateEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
             return View(viewModel);
         }
 
@@ -405,21 +421,28 @@ namespace Garage.Controllers
             return _context.ParkedVehicle.Any(e => e.Id == id);
         }
 
-        private bool ParkedVehicleIsUnique(string registration, int? id)
-        {
-            return !_context.ParkedVehicle
-                .Where(e => e.Id != id)
-                .Any(e => e.Registration == registration);
-        }
+        //private bool ParkedVehicleIsUnique(string registration, int? id)
+        //{
+        //    return !_context.ParkedVehicle
+        //        .Where(e => e.Id != id)
+        //        .Any(e => e.Registration == registration);
+        //}
 
-        private CreateOrEditViewModel GenerateCreateOrEditViewModel(Vehicle parkedVehicle, float placesLeft)
+        private CreateOrEditViewModel GenerateEditViewModel(Vehicle parkedVehicle, float placesLeft)
         {
             var vehicleItemList = GetSelectItemsList(placesLeft);
+            SelectList vehicleTypes = new SelectList(_context.VehicleType, "Id", "Name");
 
             var viewModel = new CreateOrEditViewModel
             {
+                Registration = parkedVehicle.Registration,
+                Color = parkedVehicle.Color,
+                Brand = parkedVehicle.Brand,
+                Model = parkedVehicle.Model,
+                VehicleTypeId = parkedVehicle.VehicleTypeId,
+
                 SelectedVehicleType = parkedVehicle.VehicleType,
-                VehicleTypeList = new SelectList(vehicleItemList, "Value", "Text")
+                VehicleTypeList = vehicleTypes
             };
 
             return viewModel;

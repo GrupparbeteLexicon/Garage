@@ -34,16 +34,20 @@
                        name="search"
                        placeholder="Search registration..."
                        value="@Context.Request.Query["search"]"
-                       @(!Model.Vehicles.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "") />
+                       @(!Model.Vehicles.Any() && string.IsNullOrWhiteSpace(Model.Search) ? "disabled" : "") />
+
+                <select asp-for="VehicleTypeId" asp-items="Model.VehicleTypeList" class="form-select">
+                    <option value="0" selected disabled>--- Search by vehicle type ---</option>
+                </select>
 
                 <button type="submit"
                         class="btn btn-primary"
-                        @(!Model.Vehicles.Any() && string.IsNullOrWhiteSpace(ViewData["Search"] as string) ? "disabled" : "")>
+                        @(!Model.Vehicles.Any() && string.IsNullOrWhiteSpace(Model.Search) ? "disabled" : "")>
                     Search
                 </button>
 
                 <a asp-action="Index"
-                   class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(ViewData["Search"] as string) && ViewData["Type"] == null ? "disabled" : "")">
+                   class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(Model.Search) && ViewData["Type"] == null ? "disabled" : "")">
                     Clear
                 </a>
             </div>
@@ -78,7 +82,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.VehicleType)
+                    @Html.DisplayFor(modelItem => item.VehicleType.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Registration)
@@ -101,7 +105,7 @@
 
 @if (!Model.Vehicles.Any())
 {
-    @if (string.IsNullOrWhiteSpace(ViewData["Search"] as string))
+    @if (string.IsNullOrWhiteSpace(Model.Search))
     {
         <p class="text-muted">No vehicles currently parked.</p>
     }

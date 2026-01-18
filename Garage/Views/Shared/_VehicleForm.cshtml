@@ -6,7 +6,7 @@
 <div class="form-group">
     <label asp-for="VehicleTypeId" class="control-label fw-bold">Vehicle Type</label>
     <select asp-for="VehicleTypeId" asp-items="Model.VehicleTypeList" class="form-select">
-        <option value="" selected disabled>--- Select vehicle Type ---</option>
+        <option value="0" selected disabled>--- Select vehicle Type ---</option>
     </select>
     <span asp-validation-for="VehicleTypeId" class="text-danger"></span>
 </div>

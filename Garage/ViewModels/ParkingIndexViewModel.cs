@@ -1,4 +1,6 @@
-﻿namespace Garage.ViewModels
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace Garage.ViewModels
 {
     public class ParkingIndexViewModel
     {
@@ -13,5 +15,8 @@
         public string PlacesLeft { get; init; }
 
         public bool IsFull => PlacesUsed >= Capacity;
-    }
+        public string? Search { get; init; } = string.Empty;
+        public int? VehicleTypeId { get; set; }
+        public SelectList VehicleTypeList { get; set; }
+     }
 }

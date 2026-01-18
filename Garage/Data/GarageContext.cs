@@ -46,12 +46,12 @@ public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDb
 			},
 			new VehicleType()
 			{
-				Id = 3,
+				Id = 4,
 				Name = "Bus"
 			},
 			new VehicleType()
 			{
-				Id = 3,
+				Id = 5,
 				Name = "Truck"
 			}
 			);

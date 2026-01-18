@@ -25,34 +25,43 @@ public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDb
         modelBuilder.Entity<Vehicle>()
             .HasOne(v => v.ParkingSpot)          
             .WithOne(p => p.ParkedVehicle)              
-            .HasForeignKey<Vehicle>(v => v.ParkingSpotId)  
+            .HasForeignKey<Vehicle>(v => v.ParkingSpotId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        modelBuilder.Entity<VehicleType>().HasData(
+		modelBuilder.Entity<VehicleType>()
+	    .Property(v => v.Id)
+	    .ValueGeneratedOnAdd();
+
+		modelBuilder.Entity<VehicleType>().HasData(
             new VehicleType()
             {
                 Id = 1,
-                Name = "Car"
-            },
+                Name = "Car",
+                ParkSize = 3,  // 1 Place
+			},
 			new VehicleType()
 			{
 				Id = 2,
-				Name = "Motorcycle"
+				Name = "Motorcycle",
+				ParkSize = 1,  // 1/3 Place
 			},
 			new VehicleType()
 			{
 				Id = 3,
-				Name = "ATV"
+				Name = "ATV",
+				ParkSize = 3,  // 1 Place
 			},
 			new VehicleType()
 			{
 				Id = 4,
-				Name = "Bus"
+				Name = "Bus",
+				ParkSize = 9,  // 3 Places
 			},
 			new VehicleType()
 			{
 				Id = 5,
-				Name = "Truck"
+				Name = "Truck",
+				ParkSize = 6,  // 2 Places
 			}
 			);
 	}

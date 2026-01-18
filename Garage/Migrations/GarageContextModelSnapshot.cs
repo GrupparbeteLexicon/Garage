@@ -205,9 +205,6 @@ namespace Garage.Migrations
                     b.Property<int>("ParkSize")
                         .HasColumnType("int");
 
-                    b.Property<int>("VehicleSize")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("VehicleType");
@@ -217,22 +214,31 @@ namespace Garage.Migrations
                         {
                             Id = 1,
                             Name = "Car",
-                            ParkSize = 0,
-                            VehicleSize = 0
+                            ParkSize = 3
                         },
                         new
                         {
                             Id = 2,
                             Name = "Motorcycle",
-                            ParkSize = 0,
-                            VehicleSize = 0
+                            ParkSize = 1
                         },
                         new
                         {
                             Id = 3,
+                            Name = "ATV",
+                            ParkSize = 3
+                        },
+                        new
+                        {
+                            Id = 4,
                             Name = "Bus",
-                            ParkSize = 0,
-                            VehicleSize = 0
+                            ParkSize = 9
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Truck",
+                            ParkSize = 6
                         });
                 });
 

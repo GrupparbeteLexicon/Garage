@@ -38,9 +38,10 @@ public class SeedData
             await SeedUsers(usersToAdd);
             await AssignRoles(rolesToAssign);
         }
-
         if (!context.VehicleType.Any())
             await SeedVehicleTypes();
+        if (!context.ParkingSpots.Any())
+            await SeedParkingSpots(200);
         if (!context.Vehicle.Any())
         {
             foreach (var user in _userManager.Users)
@@ -140,6 +141,23 @@ public class SeedData
 
         await _context.VehicleType.AddRangeAsync(types);
         await _context.SaveChangesAsync();
+    }
+
+    private static async Task SeedParkingSpots(int count)
+    {
+        var vehicleSizes = _context.VehicleType.Select(s => s.VehicleSize).ToArray();
+        var faker = new Faker<ParkingSpot>()
+       .RuleFor(v => v.ParkingSpotSize, f => f.PickRandom(vehicleSizes))
+       .RuleFor(v => v.Name, f =>
+       {
+           var index = f.UniqueIndex;
+           char section = (char)('A' + (index / 50) % 5); // A–E
+           int number = (index % 50) + 1;
+
+           return $"{section}-{number:D2}";
+       });
+        var parkingSpots = faker.Generate(count);
+        await _context.ParkingSpots.AddRangeAsync(parkingSpots);
     }
 
     private static async Task SeedUserVehicles(string userId, int count)

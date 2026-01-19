@@ -98,7 +98,7 @@ namespace Garage.Controllers
                 }
 
                 TempData["SuccessMessage"] = $"Vehicle with Registration Number: {createdVehicleViewModel.Registration.ToUpper()} parked successfully!";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(OwnedVehicles));
                 }
             ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name", createdVehicleViewModel.VehicleTypeId);
             return View(createdVehicleViewModel);
@@ -118,7 +118,6 @@ namespace Garage.Controllers
                 return NotFound();
             }
             var availableSpots = _context.ParkingSpots.Where(x => x.ParkedVehicleID != null || x.Blocked).ToList();
-            ViewData["ParkingSpotId"] = new SelectList(availableSpots, "Id", "Name", vehicle.ParkingSpotId);
             ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name", vehicle.VehicleTypeId);
             return View(new CreateOrEditVehicleViewModel(vehicle));
         }
@@ -131,15 +130,50 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle.FindAsync(id);
+            var vehicle = await _context.Vehicle.Include(v => v.VehicleType).FirstOrDefaultAsync(v => v.Id == id);
             if (vehicle == null)
             {
                 return NotFound();
             }
-            var availableSpots = _context.ParkingSpots.Select(x => (x.ParkedVehicleID != null || x.Blocked || x.ParkingSpotSize >= vehicle.VehicleType.VehicleSize)).ToList();
-            ViewData["ParkingSpotId"] = new SelectList(availableSpots, "Id", "Name", vehicle.ParkingSpotId);
-            ViewData["VehicleTypeId"] = new SelectList(_context.VehicleType, "Id", "Name", vehicle.VehicleTypeId);
-            return View(new CreateOrEditVehicleViewModel(vehicle));
+            ParkingSpot availableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(x => (x.ParkedVehicleID == null && !x.Blocked && x.ParkingSpotSize == vehicle.VehicleType.VehicleSize));
+            if (availableSpot == null) {
+                availableSpot = await _context.ParkingSpots.FirstOrDefaultAsync(x => (x.ParkedVehicleID == null && !x.Blocked && x.ParkingSpotSize > vehicle.VehicleType.VehicleSize));
+                if (availableSpot == null)
+                {
+                    TempData["ErrorMessage"] = $"Sorry, there are no parking spots available.";
+                    return RedirectToAction(nameof(OwnedVehicles));
+                }
+            }
+            vehicle.ParkingSpotId = availableSpot.Id;
+            availableSpot.ParkedVehicleID = vehicle.Id;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Vehicle with Registration Number: {vehicle.Registration} has been parked on space {availableSpot.Name}!";
+            return RedirectToAction(nameof(OwnedVehicles));
+        }
+
+        // GET: Vehicles/Edit/5
+        public async Task<IActionResult> Unpark(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var vehicle = await _context.Vehicle.Include(v => v.ParkingSpot).FirstOrDefaultAsync(v => v.Id == id);
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+            if (vehicle.ParkingSpotId == null || vehicle.ParkingSpot == null)
+            {
+                    TempData["ErrorMessage"] = $"Sorry, that vehicle is not parked.";
+                    return RedirectToAction(nameof(OwnedVehicles));
+            }
+            vehicle.ParkingSpot.ParkedVehicleID = null;
+            vehicle.ParkingSpotId = null;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Vehicle with Registration Number: {vehicle.Registration} has been unparked!";
+            return RedirectToAction(nameof(OwnedVehicles));
         }
 
         // POST: Vehicles/Edit/5

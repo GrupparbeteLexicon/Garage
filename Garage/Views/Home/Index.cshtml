@@ -20,6 +20,10 @@
                 <h2 class="text-danger mt-2">Garage is Full!</h2>
                 <p>Please wait until some vehicles checkout.</p>
             }
+            else if (!User.IsInRole("Admin") && !User.IsInRole("Member"))
+            {
+                <h2 class="text-danger mt-2">Please login to park</h2>
+            }
             else
             {
                 <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>

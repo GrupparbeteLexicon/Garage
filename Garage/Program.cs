@@ -1,3 +1,4 @@
+using Garage.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Garage.Data;
@@ -17,6 +18,13 @@ namespace Garage
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<GarageContext>();
+
+            // Add authorization policies
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireMember", policy => policy.RequireRole(UserRoles.Member, UserRoles.Admin));
+                options.AddPolicy("RequireAdmin", policy => policy.RequireRole(UserRoles.Admin));
+            });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

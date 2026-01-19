@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garage.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage.Data;
 using Garage.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Garage.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
     public class VehicleTypesController : Controller
     {
         private readonly GarageContext _context;

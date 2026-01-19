@@ -1,9 +1,10 @@
 using Garage.Data;
+using Garage.Extensions;
 using Garage.Models;
 using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using static Garage.Extensions.CountPlacesExtension;
 
 namespace Garage.Controllers
@@ -21,14 +22,15 @@ namespace Garage.Controllers
 
         public IActionResult Index()
         {
-            var query = _context.Vehicle.Include(s => s.VehicleType).AsQueryable();
+            var query = _context.Vehicle.AsQueryable();
             HomeViewModel homeViewModel = new HomeViewModel();
 
-            int vehiclesParked = query.Count();
-            float placesUsed = CountPlaces(query);
-            string placesLeft = ToMixedFraction(homeViewModel.Capacity - placesUsed);
+            float capacity = GetCapacity(_context);
+            float placesUsed = CountPlacesUsed(query);
+            string placesLeft = (capacity - placesUsed).ToString();
 
-            homeViewModel.VehiclesParked = vehiclesParked;
+            homeViewModel.Capacity = capacity;
+            homeViewModel.VehiclesParked = (int)placesUsed;
             homeViewModel.PlacesLeft = placesLeft;
             homeViewModel.GarageIsFull = placesUsed > homeViewModel.Capacity;
 

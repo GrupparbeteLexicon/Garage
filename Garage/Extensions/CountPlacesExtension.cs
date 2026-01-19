@@ -1,5 +1,8 @@
-﻿using Garage.Models;
+﻿using Garage.Data;
+using Garage.Models;
+using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
@@ -7,135 +10,15 @@ namespace Garage.Extensions;
 
 public static class CountPlacesExtension
 {
-    public static float Capacity { get; } = 50f;
-
-    public static float CountPlaces(IQueryable<Vehicle> vehicles)
+    public static float GetCapacity(GarageContext context)
     {
-        int placesUsed = 0;
-
-        foreach (var vehicle in vehicles)
-        {
-            placesUsed += vehicle.VehicleType.VehicleSize;
-        }
-
-        return (float)placesUsed / 3; // Since 1 Place = 3 Units
+        return context.ParkingSpots.Count();
     }
 
-    public static float CountPlaces(IEnumerable<Garage.ViewModels.ParkingVehicleViewModel> vehicles)
+    public static float CountPlacesUsed(IQueryable<Vehicle> vehicles)
     {
-        int placesUsed = 0;
+        int parkedVehiclesCount = vehicles.Where(v => v.ParkingSpot != null).ToList().Count();
 
-        foreach (var vehicle in vehicles)
-        {
-            placesUsed += vehicle.VehicleType.VehicleSize;
-        }
-
-        return (float)placesUsed / 3; // Since 1 Place = 3 Units
-    }
-
-    public static List<SelectListItem> GetSelectItemsList(float placesLeft)
-    {
-        var vehicleTypeList = new List<SelectListItem>();
-
-        if (placesLeft > 0.2f)
-        {
-            vehicleTypeList.Add(new SelectListItem
-            {
-                Value = VehicleTypeModel.MOTORCYCLE.ToString(),
-                Text = VehicleTypeModel.MOTORCYCLE.GetDisplayName()
-            });
-        }
-
-        if (placesLeft >= 1)
-        {
-            vehicleTypeList.Add(new SelectListItem
-            {
-                Value = VehicleTypeModel.ATV.ToString(),
-                Text = VehicleTypeModel.ATV.GetDisplayName()
-            });
-
-            vehicleTypeList.Add(new SelectListItem
-            {
-                Value = VehicleTypeModel.CAR.ToString(),
-                Text = VehicleTypeModel.CAR.GetDisplayName()
-            });
-        }
-
-        if (placesLeft >= 2)
-        {
-            vehicleTypeList.Add(new SelectListItem
-            {
-                Value = VehicleTypeModel.TRUCK.ToString(),
-                Text = VehicleTypeModel.TRUCK.GetDisplayName()
-            });
-        }
-
-        if (placesLeft >= 3)
-        {
-            vehicleTypeList.Add(new SelectListItem
-            {
-                Value = VehicleTypeModel.AIRPLANE.ToString(),
-                Text = VehicleTypeModel.AIRPLANE.GetDisplayName()
-            });
-
-            vehicleTypeList.Add(new SelectListItem
-            {
-                Value = VehicleTypeModel.BOAT.ToString(),
-                Text = VehicleTypeModel.BOAT.GetDisplayName()
-            });
-
-            vehicleTypeList.Add(new SelectListItem
-            {
-                Value = VehicleTypeModel.BUS.ToString(),
-                Text = VehicleTypeModel.BUS.GetDisplayName()
-            });
-        }
-
-        return vehicleTypeList;
-    }
-
-    public static string GetDisplayName(this Enum value)
-    {
-        var member = value.GetType()
-                          .GetMember(value.ToString())
-                          .FirstOrDefault();
-
-        if (member == null)
-            return value.ToString();
-
-        var display = member.GetCustomAttribute<DisplayAttribute>();
-        return display?.Name ?? value.ToString();
-    }
-
-    public static string ToMixedFraction(float value, int maxDenominator = 3) // using maxDenominator 3 because we are interested in thirds
-    {
-        int numerator = (int)Math.Round(value * maxDenominator);
-        int denominator = maxDenominator;
-
-        int gcd = GCD(numerator, denominator);
-        numerator /= gcd;
-        denominator /= gcd;
-
-        // whole number part
-        int whole = numerator / denominator;
-        int remainder = numerator % denominator;
-
-        if (whole > 0 && remainder > 0)
-            return $"{whole} and {remainder}/{denominator}";
-        if (whole > 0 && remainder == 0)
-            return whole.ToString();
-        // whole == 0
-        return $"{remainder}/{denominator}";
-    }
-
-    private static int GCD(int a, int b)
-    {
-        while (b != 0)
-        {
-            int temp = b;
-            b = a % b;
-            a = temp;
-        }
-        return Math.Abs(a);
+        return parkedVehiclesCount;
     }
 }

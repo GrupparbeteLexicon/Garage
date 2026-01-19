@@ -43,7 +43,8 @@
                 @Html.DisplayFor(modelItem => item.VehicleType.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Owner.Id)
+                    @Html.DisplayFor(modelItem => item.Owner.FirstName)
+                    @Html.DisplayFor(modelItem => item.Owner.LastName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ParkingSpot.Id)

@@ -21,7 +21,10 @@ namespace Garage.Controllers
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
-            var garageContext = _context.Vehicle.Include(v => v.Owner).Include(v => v.ParkingSpot).Include(v => v.VehicleType);
+            var garageContext = _context.Vehicle
+                .Include(v => v.Owner)
+                .Include(v => v.ParkingSpot)
+                .Include(v => v.VehicleType);
             return View(await garageContext.ToListAsync());
         }
         [Authorize]

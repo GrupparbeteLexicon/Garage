@@ -23,26 +23,43 @@ namespace Garage.Controllers
         }
 
         // GET: ParkedVehicles
-        public async Task<IActionResult> Index(string search, VehicleType? type = null)
+        public async Task<IActionResult> Index(string? search, int? vehicleTypeId)
         {
-            var query = _context.Vehicle.AsQueryable();
-
-            ViewData["Search"] = search;
-            ViewData["Type"] = type;
+            var query = _context.Vehicle
+                .Where(v => v.Owner.Email == User.Identity.Name)
+                .Include(v => v.VehicleType)
+                .Include(v => v.ParkingSpot)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(v => v.Registration.Contains(search));
             }
-            if (type != null)
+
+            if (vehicleTypeId.HasValue)
             {
-                query = query.Where(v => v.VehicleType == type);
+                query = query.Where(v => v.VehicleType.Id == vehicleTypeId.Value);
             }
 
             var vehicles = await query
                 .Select(v => new ParkingVehicleViewModel(v))
                 .ToListAsync();
-            return View(vehicles);
+
+            var placesUsed = CountPlacesUsed(query);
+
+            ParkingIndexViewModel model = new ParkingIndexViewModel()
+            {
+                Capacity = GetCapacity(_context),
+                Vehicles = vehicles,
+                PlacesUsed = placesUsed,
+                PlacesLeft = (GetCapacity(_context) - CountPlacesUsed(query)).ToString(),
+
+                Search = search,
+                VehicleTypeId = vehicleTypeId,
+                VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name")
+            };
+
+            return View(model);
         }
 
         [Authorize]
@@ -50,7 +67,9 @@ namespace Garage.Controllers
         {
             var user = await _userManager.Users
                 .Include(u => u.OwnedVehicles)
-                .ThenInclude(v => v.ParkingSpot)
+                    .ThenInclude(v => v.ParkingSpot)
+                .Include(u => u.OwnedVehicles)
+                    .ThenInclude(v => v.VehicleType)
                 .FirstOrDefaultAsync(u => u.Id == _userManager.GetUserId(User));
 
             if (user == null)
@@ -65,14 +84,14 @@ namespace Garage.Controllers
         // GET: ParkedVehicles/Statistics
         public IActionResult Statistics()
         {
-            float count = CountPlaces(_context.Vehicle.Include(s => s.VehicleType).AsQueryable());
+            float count = CountPlacesUsed(_context.Vehicle.Include(s => s.VehicleType).AsQueryable());
             DateTime now = DateTime.Now;
             ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
             {
                 
-                Capacity = (int)CountPlacesExtension.Capacity,
+                Capacity = (int)GetCapacity(_context),
                 PlacesUsed = (int)Math.Ceiling(count), // show whole places used
-                PlacesLeft = ToMixedFraction(CountPlacesExtension.Capacity - count),
+                PlacesLeft = (GetCapacity(_context) - count).ToString(),
                 HourlyRate = PriceExtentions.HourlyRate, // TODO: Move to configuration or database
                 Currency = PriceExtentions.Currency, // TODO: Move to configuration or database
                 TotalParkedTime = _context.Vehicle
@@ -121,10 +140,10 @@ namespace Garage.Controllers
             //parkedVehicle.ParkingSpot.ParkTime = DateTime.Now;
 
             var query = _context.Vehicle.AsQueryable();
-            float placesUsed = CountPlaces(query);
-            bool garageIsFull = placesUsed > Capacity;
+            float placesUsed = CountPlacesUsed(query);
+            bool garageIsFull = placesUsed > GetCapacity(_context);
 
-            CreateOrEditViewModel viewModel = await GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+            CreateOrEditViewModel viewModel = await GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
             viewModel.GarageIsFull = garageIsFull;
             viewModel.DisableEditParkTime = true;
 
@@ -141,8 +160,8 @@ namespace Garage.Controllers
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
             var query = _context.Vehicle.Include(s => s.VehicleType).AsQueryable();
-            float placesUsed = CountPlaces(query);
-			CreateOrEditViewModel viewModel = await GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+            float placesUsed = CountPlacesUsed(query);
+			CreateOrEditViewModel viewModel = await GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
 
 			if (parkedVehicle == null) 
             {
@@ -188,7 +207,7 @@ namespace Garage.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             var query = _context.Vehicle.Include(s => s.VehicleType).AsQueryable();
-            float placesUsed = CountPlaces(query);
+            float placesUsed = CountPlacesUsed(query);
 
             if (id == null)
             {
@@ -196,7 +215,7 @@ namespace Garage.Controllers
             }
 
             var parkedVehicle = await _context.Vehicle.FindAsync(id);
-            var viewModel = GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+            var viewModel = GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
             //viewModel.DisableEditParkTime = true;
 
 			return View(viewModel);
@@ -211,7 +230,7 @@ namespace Garage.Controllers
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, parkedVehicle.Id);
             var query = _context.Vehicle.Include(s => s.VehicleType).AsQueryable();
-            float placesUsed = CountPlaces(query);
+            float placesUsed = CountPlacesUsed(query);
 
             if (id != parkedVehicle.Id)
             {
@@ -259,7 +278,7 @@ namespace Garage.Controllers
                 }
             }
 
-            CreateOrEditViewModel viewModel = await GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
+            CreateOrEditViewModel viewModel = await GenerateCreateOrEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
             return View(viewModel);
         }
 
@@ -287,7 +306,8 @@ namespace Garage.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parkedVehicle = await _context.Vehicle.FindAsync(id);
+            var parkedVehicle = await _context.Vehicle                
+                .FindAsync(id);
             if (parkedVehicle != null)
             {
                 DateTime now = DateTime.Now;

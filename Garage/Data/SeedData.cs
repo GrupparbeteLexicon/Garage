@@ -33,10 +33,13 @@ public class SeedData
             };
 
             var rolesToAssign = usersToAdd.Select(u => (u.Email, u.Role)).ToArray();
+            var allUsers = _userManager.Users.Select(u => (u.Email!)).ToArray();
 
             await SeedRandomUsers(100);
             await SeedUsers(usersToAdd);
             await AssignRoles(rolesToAssign);
+
+            await AddFullNameClaims(allUsers);
         }
 
         if (!context.VehicleType.Any())
@@ -154,5 +157,21 @@ public class SeedData
             .RuleFor(v => v.Color, f => f.Commerce.Color());
         var vehicles = faker.Generate(count);
         await _context.Vehicle.AddRangeAsync(vehicles);
+    }
+
+    private static async Task AddFullNameClaims(string[] users)
+    {
+        foreach (var seed in users)
+        {
+            var userFound = await _userManager.FindByEmailAsync(seed);
+            var fullName = $"{userFound.FirstName} {userFound.LastName}";
+            var hasClaim = (await _userManager.GetClaimsAsync(userFound))
+                .Any(c => c.Type == "FullName" && c.Value == fullName);
+            if (!hasClaim)
+            {
+                var claimResult = await _userManager.AddClaimAsync(userFound, new System.Security.Claims.Claim("FullName", fullName));
+                if (!claimResult.Succeeded) throw new Exception(string.Join("\n", claimResult.Errors));
+            }
+        }
     }
 }

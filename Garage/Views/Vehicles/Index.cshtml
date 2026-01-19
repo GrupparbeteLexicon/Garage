@@ -1,0 +1,81 @@
+﻿@model IEnumerable<Garage.Models.Vehicle>
+
+@{
+    ViewData["Title"] = "All Vehicles";
+}
+
+<h1>All Vehicles</h1>
+@*
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+*@
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.VehicleType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Owner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParkingSpot)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Registration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Color)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Brand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Model)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.VehicleType.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Owner.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ParkingSpot.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Registration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Color)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Model)
+            </td>
+            <td>
+                @if (item.IsParked)
+                {
+                    <a asp-action="Unpark" asp-route-id="@item.Id">Unpark</a>
+                }
+                else 
+                {
+                <a asp-action="Park" asp-route-id="@item.Id">Park</a>
+                }
+                |
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Unregister</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

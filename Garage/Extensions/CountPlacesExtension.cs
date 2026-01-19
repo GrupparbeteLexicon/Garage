@@ -35,7 +35,7 @@ public static class CountPlacesExtension
 
     private static int GetPlaceSizeForVehicleType(VehicleType vehicleType)
     {
-        return vehicleType.VehicleSize;
+        return 0;
         //return vehicleType switch
         //{
         //    VehicleTypeModel.MOTORCYCLE => 1, // 1/3 Place

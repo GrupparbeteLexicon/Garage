@@ -1,0 +1,38 @@
+﻿@using Garage.ViewModels
+@model OwnedVehiclesViewModel
+
+<h2>Your Vehicles</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Registration</th>
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Parked Since</th>
+            <th>Parked For</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var vehicle in Model.Vehicles)
+        {
+            <tr>
+                <td>@vehicle.VehicleType</td>
+                <td>@vehicle.Registration</td>
+                <td>@vehicle.Brand</td>
+                <td>@vehicle.Model</td>
+
+                @if (vehicle.IsParked)
+                {
+                    <td>@vehicle.ParkTime</td>
+                    <td>@vehicle.ParkedDuration</td>
+                }
+                else
+                {
+                    <td colspan="2">Not parked</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

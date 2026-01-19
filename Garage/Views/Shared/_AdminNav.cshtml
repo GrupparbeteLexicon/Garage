@@ -1,0 +1,48 @@
+@using Garage.Constants
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@if (User.IsInRole(UserRoles.Admin))
+{
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom navbar-secondary bg-danger">
+        <div class="container">
+            <div>
+                <a class="navbar-brand fw-bold fs-3 text-white" asp-area="Admin" asp-page="/Users/List">
+                    Admin
+                </a>
+                <span>
+                    @UserManager.GetUserAsync(User).Result?.FullName
+                </span>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContentAdmin"
+                    aria-controls="navbarContentAdmin" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContentAdmin">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold" asp-controller="Vehicles" asp-action="Index">All Vehicles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold" asp-controller="ParkedVehicles" asp-action="Index">Parked Vehicles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold" asp-controller="ParkingSpots" asp-action="Index">Parking Spots</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold" asp-controller="ParkedVehicles" asp-action="Statistics">Statistics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold" asp-controller="VehicleTypes" asp-action="Index">Vehicle Types</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold" asp-area="Admin" asp-page="/Roles/List">Roles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-semibold" asp-area="Admin" asp-page="/Users/List">Users</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+}

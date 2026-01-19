@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Garage.Areas.Admin.Pages.Roles;
 
-[Authorize(Roles = UserRoles.Admin)]
+[Authorize(Policy = "RequireAdmin")]
 public class EditModel : PageModel
 {
     private readonly RoleManager<IdentityRole> _roleManager;

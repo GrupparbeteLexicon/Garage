@@ -32,32 +32,15 @@
                             <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="ParkedVehicles" asp-action="OwnedVehicles">My Vehicles</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="Vehicles" asp-action="Index">Test Vehicles</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="Vehicles" asp-action="OwnedVehicles">Owned Vehicles</a>
                         </li>
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="ParkedVehicles" asp-action="Index">All Vehicles</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="ParkingSpots" asp-action="Index">Parking Spots</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="ParkedVehicles" asp-action="Statistics">Statistics</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white fw-semibold fs-5" asp-area="" asp-controller="VehicleTypes" asp-action="Index">Vehicle Types</a>
-                            </li>
-                        }
 
                     </ul>
                     <partial name="_LoginPartial"/>
                 </div>
             </div>
         </nav>
+        <partial name="_AdminNav"/>
     </header>
 
     <!-- Main Content -->

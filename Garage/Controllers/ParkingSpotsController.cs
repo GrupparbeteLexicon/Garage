@@ -9,9 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garage.Constants;
 
 namespace Garage.Controllers
 {
+    [Authorize(Policy = "RequireAdmin")]
     public class ParkingSpotsController : Controller
     {
         private readonly GarageContext _context;

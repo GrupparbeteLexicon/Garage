@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Garage.Constants;
 
 namespace Garage.Controllers
 {
@@ -19,6 +20,7 @@ namespace Garage.Controllers
         private readonly UserManager<ApplicationUser> _userManager = userManager;
 
         // GET: Vehicles
+        [Authorize(Policy = "RequireAdmin")]
         public async Task<IActionResult> Index()
         {
             var garageContext = _context.Vehicle.Include(v => v.Owner).Include(v => v.ParkingSpot).Include(v => v.VehicleType);

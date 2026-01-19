@@ -1,5 +1,6 @@
 #nullable disable
 using Garage.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Garage.Areas.Admin.Pages.Users;
 
+[Authorize(Policy = "RequireAdmin")]
 public class ListModel : PageModel
 {
     private readonly UserManager<ApplicationUser> _userManager;

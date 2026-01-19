@@ -1,4 +1,5 @@
-﻿using Garage.Data;
+﻿using Garage.Constants;
+using Garage.Data;
 using Garage.Extensions;
 using Garage.Models;
 using Garage.ViewModels;
@@ -63,6 +64,7 @@ namespace Garage.Controllers
 
 
         // GET: ParkedVehicles/Statistics
+        [Authorize(Policy = "RequireAdmin")]
         public IActionResult Statistics()
         {
             float count = CountPlaces(_context.Vehicle.Include(s => s.VehicleType).AsQueryable());

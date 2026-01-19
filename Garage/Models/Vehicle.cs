@@ -11,19 +11,23 @@ public class Vehicle
 {
     public int Id { get; set; }
 
-    public required int VehicleTypeId { get; set; }
+    [Required]
+    public int VehicleTypeId { get; set; }
 
-    public required VehicleType VehicleType { get; set; }
+    public VehicleType? VehicleType { get; set; }
 
-    public required string OwnerId { get; set; }
+    [Required]
+    public string OwnerId { get; set; }
 
     [ForeignKey(nameof(OwnerId))]
-    public required ApplicationUser Owner { get; set; }
+    public ApplicationUser? Owner { get; set; }
 
     public int? ParkingSpotId { get; set; }
 
     [ForeignKey(nameof(ParkingSpotId))]
     public ParkingSpot? ParkingSpot { get; set; }
+
+    public bool IsParked => ParkingSpotId != null;
 
     [StringLength(6)]
     public string Registration { get; set; } = string.Empty;

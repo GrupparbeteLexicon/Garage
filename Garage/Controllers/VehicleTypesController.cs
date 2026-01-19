@@ -1,40 +1,31 @@
-﻿using Garage.Data;
-using Garage.Models;
-using Garage.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Garage.Data;
+using Garage.Models;
 
 namespace Garage.Controllers
 {
-    public class ParkingSpotsController : Controller
+    public class VehicleTypesController : Controller
     {
         private readonly GarageContext _context;
 
-        public ParkingSpotsController(GarageContext context)
+        public VehicleTypesController(GarageContext context)
         {
             _context = context;
         }
 
-        // GET: ParkingSpots
-        //[Authorize(Roles = "Admin")]
+        // GET: VehicleTypes
         public async Task<IActionResult> Index()
         {
-            var spots = _context.ParkingSpots
-                .Include(p => p.ParkedVehicle)
-                .Select(p => new ParkingSpotViewModel(p))
-                .ToList();
-
-            return View(spots);
-
+            return View(await _context.VehicleType.ToListAsync());
         }
 
-        // GET: ParkingSpots/Details/5
+        // GET: VehicleTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -42,40 +33,39 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            var parkingSpot = await _context.ParkingSpots
+            var vehicleType = await _context.VehicleType
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (parkingSpot == null)
+            if (vehicleType == null)
             {
                 return NotFound();
             }
 
-            return View(parkingSpot);
+            return View(vehicleType);
         }
 
-        // GET: ParkingSpots/Create
+        // GET: VehicleTypes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: ParkingSpots/Create
+        // POST: VehicleTypes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ParkingSpotSize,Name,Blocked")] ParkingSpot parkingSpot)
+        public async Task<IActionResult> Create([Bind("Name,Id,VehicleSize")] VehicleType vehicleType)
         {
             if (ModelState.IsValid)
             {
-                parkingSpot.ParkTime = null;
-                _context.Add(parkingSpot);
+                _context.Add(vehicleType);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(parkingSpot);
+            return View(vehicleType);
         }
 
-        // GET: ParkingSpots/Edit/5
+        // GET: VehicleTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -83,22 +73,22 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            var parkingSpot = await _context.ParkingSpots.FindAsync(id);
-            if (parkingSpot == null)
+            var vehicleType = await _context.VehicleType.FindAsync(id);
+            if (vehicleType == null)
             {
                 return NotFound();
             }
-            return View(parkingSpot);
+            return View(vehicleType);
         }
 
-        // POST: ParkingSpots/Edit/5
+        // POST: VehicleTypes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ParkedCarID,ParkingSpotSize,Name,Blocked,ParkTime")] ParkingSpot parkingSpot)
+        public async Task<IActionResult> Edit(int id, [Bind("Name,Id,VehicleSize")] VehicleType vehicleType)
         {
-            if (id != parkingSpot.Id)
+            if (id != vehicleType.Id)
             {
                 return NotFound();
             }
@@ -107,12 +97,12 @@ namespace Garage.Controllers
             {
                 try
                 {
-                    _context.Update(parkingSpot);
+                    _context.Update(vehicleType);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ParkingSpotExists(parkingSpot.Id))
+                    if (!VehicleTypeExists(vehicleType.Id))
                     {
                         return NotFound();
                     }
@@ -123,10 +113,10 @@ namespace Garage.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(parkingSpot);
+            return View(vehicleType);
         }
 
-        // GET: ParkingSpots/Delete/5
+        // GET: VehicleTypes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,47 +124,34 @@ namespace Garage.Controllers
                 return NotFound();
             }
 
-            var parkingSpot = await _context.ParkingSpots
+            var vehicleType = await _context.VehicleType
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (parkingSpot == null)
+            if (vehicleType == null)
             {
                 return NotFound();
             }
 
-            return View(parkingSpot);
+            return View(vehicleType);
         }
 
-        // POST: ParkingSpots/Delete/5
+        // POST: VehicleTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parkingSpot = await _context.ParkingSpots.FindAsync(id);
-            if (parkingSpot != null)
+            var vehicleType = await _context.VehicleType.FindAsync(id);
+            if (vehicleType != null)
             {
-                _context.ParkingSpots.Remove(parkingSpot);
+                _context.VehicleType.Remove(vehicleType);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ParkingSpotExists(int id)
+        private bool VehicleTypeExists(int id)
         {
-            return _context.ParkingSpots.Any(e => e.Id == id);
+            return _context.VehicleType.Any(e => e.Id == id);
         }
-
-        public async Task<IActionResult> ToggleBlocked(int id)
-        {
-            var spot = await _context.ParkingSpots.FindAsync(id);
-            if (spot == null)
-                return NotFound();
-
-            spot.Blocked = !spot.Blocked;
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
     }
 }

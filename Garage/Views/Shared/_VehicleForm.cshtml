@@ -4,12 +4,12 @@
 
 <input type="hidden" asp-for="ParkedVehicle.Id" />
 <div class="form-group">
-    <label asp-for="ParkedVehicle.VehicleType" class="control-label fw-bold">Vehicle Type</label>
-    <select asp-for="ParkedVehicle.VehicleType" asp-items="Model.VehicleTypeList" class="form-select">
+    <label asp-for="ParkedVehicle.VehicleTypeId" class="control-label fw-bold">Vehicle Type</label>
+    <select asp-for="ParkedVehicle.VehicleTypeId" asp-items="Model.VehicleTypeList" class="form-select">
         <option value="" selected disabled>--- Select vehicle Type ---</option>
     </select>
-    <span asp-validation-for="ParkedVehicle.VehicleType" class="text-danger"></span>
-    <span asp-validation-for="ParkedVehicle.VehicleType" class="text-danger"></span>
+    <span asp-validation-for="ParkedVehicle.VehicleTypeId" class="text-danger"></span>
+    <span asp-validation-for="ParkedVehicle.VehicleTypeId" class="text-danger"></span>
 </div>
 <div class="form-group">
     <label asp-for="ParkedVehicle.Registration" class="control-label fw-bold"></label>

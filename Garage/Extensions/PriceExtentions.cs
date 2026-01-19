@@ -20,6 +20,7 @@ public static class PriceExtentions
 
     internal static decimal ParkedTimeToPrice(this TimeSpan totalParkedTime)
     {
+        if (totalParkedTime == null) return 0;
         decimal costPerPeroid = PayRate * HourlyRate / 60.0M;
         decimal totalCost = costPerPeroid * decimal.Ceiling(((decimal)totalParkedTime.TotalMinutes - FreeTime) / PayRate);
         return decimal.Max(totalCost, 0);

@@ -35,7 +35,7 @@ namespace Garage.ViewModels
             Id = vehicle.Id;
             Registration = vehicle.Registration;
             VehicleType = vehicle.VehicleType;
-            ParkTime = vehicle.ParkingSpot.ParkTime;
+            ParkTime = (DateTime)vehicle.ParkingSpot.ParkTime;
             Color = vehicle.Color;
             Brand = vehicle.Brand;
             Model = vehicle.Model;

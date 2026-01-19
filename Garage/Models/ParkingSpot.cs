@@ -13,11 +13,11 @@ public class ParkingSpot
 
     public Vehicle? ParkedVehicle { get; set; }
 
-    public required int ParkingSpotSize { get; set; }
+    public int ParkingSpotSize { get; set; }
 
     public string Name { get; set; } = string.Empty;
 
     public bool Blocked { get; set; } = false;
 
-    public DateTime ParkTime { get; set; } = DateTime.Now;
+    public DateTime? ParkTime { get; set; } = null;
 }

@@ -65,7 +65,7 @@ namespace Garage.Controllers
         // GET: ParkedVehicles/Statistics
         public IActionResult Statistics()
         {
-            float count = CountPlaces(_context.ParkedVehicle.Include(s => s.VehicleType).AsQueryable());
+            float count = CountPlaces(_context.Vehicle.Include(s => s.VehicleType).AsQueryable());
             DateTime now = DateTime.Now;
             ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
             {
@@ -75,19 +75,19 @@ namespace Garage.Controllers
                 PlacesLeft = ToMixedFraction(CountPlacesExtension.Capacity - count),
                 HourlyRate = PriceExtentions.HourlyRate, // TODO: Move to configuration or database
                 Currency = PriceExtentions.Currency, // TODO: Move to configuration or database
-                TotalParkedTime = _context.ParkedVehicle
+                TotalParkedTime = _context.Vehicle
                     .Include(s => s.ParkingSpot)
                     .Where(s => s.ParkingSpot != null)
                     .Select(s => now - s.ParkingSpot!.ParkTime)
                     .ToList()
-                    .Sum(s => (decimal)s.TotalHours),
-                TotalRevenue = _context.ParkedVehicle
+                    .Sum(s => (decimal)((TimeSpan)s).TotalHours),
+                TotalRevenue = _context.Vehicle
                     .Include(s => s.ParkingSpot)
                     .Where(s => s.ParkingSpot != null)
-                    .Select(s => (now - s.ParkingSpot!.ParkTime).ParkedTimeToPrice())
+                    .Select(s => (now - (DateTime)s.ParkingSpot!.ParkTime).ParkedTimeToPrice())
                     .ToList()
                     .Sum(s => s),
-                VehicleTypeCounts = _context.ParkedVehicle
+                VehicleTypeCounts = _context.Vehicle
                     .Include(s => s.VehicleType)
                     .GroupBy(v => v.VehicleType)
                     .ToDictionary(g => g.Key.Name, g => g.Count()),
@@ -140,7 +140,7 @@ namespace Garage.Controllers
         public async Task<IActionResult> Create([Bind("Id,VehicleTypeId,Registration,Color,Brand,Model")] Vehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, null);
-            var query = _context.ParkedVehicle.Include(s => s.VehicleType).AsQueryable();
+            var query = _context.Vehicle.Include(s => s.VehicleType).AsQueryable();
             float placesUsed = CountPlaces(query);
 			CreateOrEditViewModel viewModel = await GenerateCreateOrEditViewModel(parkedVehicle, Capacity - placesUsed);
 
@@ -187,7 +187,7 @@ namespace Garage.Controllers
         // GET: ParkedVehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var query = _context.ParkedVehicle.Include(s => s.VehicleType).AsQueryable();
+            var query = _context.Vehicle.Include(s => s.VehicleType).AsQueryable();
             float placesUsed = CountPlaces(query);
 
             if (id == null)
@@ -210,7 +210,7 @@ namespace Garage.Controllers
         public async Task<IActionResult> Edit(int id, Vehicle parkedVehicle)
         {
             bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, parkedVehicle.Id);
-            var query = _context.ParkedVehicle.Include(s => s.VehicleType).AsQueryable();
+            var query = _context.Vehicle.Include(s => s.VehicleType).AsQueryable();
             float placesUsed = CountPlaces(query);
 
             if (id != parkedVehicle.Id)

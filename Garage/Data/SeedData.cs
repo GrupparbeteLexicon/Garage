@@ -41,7 +41,7 @@ public class SeedData
 
         if (!context.VehicleType.Any())
             await SeedVehicleTypes();
-        if (!context.ParkedVehicle.Any())
+        if (!context.Vehicle.Any())
         {
             foreach (var user in _userManager.Users)
                 await SeedUserVehicles(user.Id, Faker.Random.Int(0, 12));
@@ -154,6 +154,6 @@ public class SeedData
             .RuleFor(v => v.Model, f => f.Vehicle.Model())
             .RuleFor(v => v.Color, f => f.Commerce.Color());
         var vehicles = faker.Generate(count);
-        await _context.ParkedVehicle.AddRangeAsync(vehicles);
+        await _context.Vehicle.AddRangeAsync(vehicles);
     }
 }

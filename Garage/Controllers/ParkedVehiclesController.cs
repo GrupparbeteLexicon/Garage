@@ -183,6 +183,7 @@ namespace Garage.Controllers
             // Find empty parking space
             var parkingSpot = _context.ParkingSpots
                 .Where(ps => ps.ParkedVehicleID == null)
+                .Where(ps => ps.ParkingSpotSize >= vehicleType!.VehicleSize)
                 .FirstOrDefault();
 
             var vehicle = new Vehicle
@@ -315,13 +316,6 @@ namespace Garage.Controllers
 				TempData["SuccessMessage"] = $"Vehicle edited successfully!";
 				return RedirectToAction(nameof(Index));
             } 
-            //else
-            //{
-            //    if (!isUnique)
-            //    {
-            //        ModelState.AddModelError("ParkedVehicle.Registration", "A vehicle with this registration already exists.");
-            //    }
-            //}
 
             CreateOrEditViewModel viewModel = GenerateEditViewModel(parkedVehicle, GetCapacity(_context) - placesUsed);
             return View(viewModel);
@@ -381,13 +375,6 @@ namespace Garage.Controllers
         {
             return _context.ParkedVehicle.Any(e => e.Id == id);
         }
-
-        //private bool ParkedVehicleIsUnique(string registration, int? id)
-        //{
-        //    return !_context.ParkedVehicle
-        //        .Where(e => e.Id != id)
-        //        .Any(e => e.Registration == registration);
-        //}
 
         private CreateOrEditViewModel GenerateEditViewModel(Vehicle parkedVehicle, float placesLeft)
         {

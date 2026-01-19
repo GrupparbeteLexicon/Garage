@@ -24,10 +24,10 @@ public class ParkingSpotViewModel
       
     [Display(Name = "Parked Since")]
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}")]
-    public DateTime ParkTime { get; }
+    public DateTime? ParkTime { get; }
 
     [Display(Name = "Parked For")]
-    public TimeSpan ParkedDuration { get; }
+    public TimeSpan? ParkedDuration { get; }
 
 
     public ParkingSpotViewModel(ParkingSpot spot)
@@ -37,9 +37,13 @@ public class ParkingSpotViewModel
         ParkedVehicleID = spot.ParkedVehicleID;
         Name = spot.Name;
         Blocked = spot.Blocked;
-        ParkTime = spot.ParkTime;
-        ParkedDuration = DateTime.Now - spot.ParkTime;
         IsAvailable = (ParkedVehicleID != null && !Blocked);
+        ParkTime = spot.ParkTime;
+        if (ParkTime != null)
+        {
+            ParkedDuration = DateTime.Now - spot.ParkTime;
+        }
+        else { ParkTime = null; }
         switch (spot.ParkingSpotSize) {
             case 0: ParkingSpotSize = "Small"; break;
             case 1: ParkingSpotSize = "Medium"; break;

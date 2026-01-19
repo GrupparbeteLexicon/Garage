@@ -45,14 +45,14 @@ namespace Garage.Controllers
                 .Select(v => new ParkingVehicleViewModel(v))
                 .ToListAsync();
 
-            var placesUsed = CountPlaces(query);
+            var placesUsed = CountPlacesUsed(query);
 
             ParkingIndexViewModel model = new ParkingIndexViewModel()
             {
                 Capacity = GetCapacity(_context),
                 Vehicles = vehicles,
                 PlacesUsed = placesUsed,
-                PlacesLeft = ToMixedFraction(GetCapacity(_context) - CountPlaces(query)),
+                PlacesLeft = (GetCapacity(_context) - CountPlacesUsed(query)).ToString(),
                 Search = search,
                 VehicleTypeId = vehicleTypeId,
                 VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name")
@@ -64,14 +64,14 @@ namespace Garage.Controllers
         // GET: ParkedVehicles/Statistics
         public IActionResult Statistics()
         {
-            float count = CountPlaces(_context.ParkedVehicle.AsQueryable());
+            float count = CountPlacesUsed(_context.ParkedVehicle.AsQueryable());
             DateTime now = DateTime.Now;
             ParkingStatisticsViewModel model = new ParkingStatisticsViewModel()
             {
                 
                 Capacity = (int)GetCapacity(_context),
                 PlacesUsed = (int)Math.Ceiling(count), // show whole places used
-                PlacesLeft = ToMixedFraction(GetCapacity(_context) - count),
+                PlacesLeft = (GetCapacity(_context) - count).ToString(),
                 HourlyRate = PriceExtentions.HourlyRate, // TODO: Move to configuration or database
                 Currency = PriceExtentions.Currency, // TODO: Move to configuration or database
                 TotalParkedTime = _context.ParkedVehicle
@@ -150,7 +150,7 @@ namespace Garage.Controllers
             SelectList vehicleTypes = new SelectList(_context.VehicleType, "Id", "Name");
 
             var query = _context.ParkedVehicle.AsQueryable();
-            float placesUsed = CountPlaces(query);
+            float placesUsed = CountPlacesUsed(query);
             float capacity = GetCapacity(_context);
 
             var viewModel = new CreateOrEditViewModel
@@ -257,7 +257,7 @@ namespace Garage.Controllers
             }
 
             float capacity = GetCapacity(_context);
-            float placesUsed = CountPlaces(query);
+            float placesUsed = CountPlacesUsed(query);
 
             var viewModel = GenerateEditViewModel(vehicle, GetCapacity(_context) - placesUsed);
 
@@ -273,7 +273,7 @@ namespace Garage.Controllers
         {
             //bool isUnique = ParkedVehicleIsUnique(parkedVehicle.Registration, parkedVehicle.Id);
             var query = _context.ParkedVehicle.AsQueryable();
-            float placesUsed = CountPlaces(query);
+            float placesUsed = CountPlacesUsed(query);
 
             if (id != parkedVehicle.Id)
             {
@@ -391,8 +391,9 @@ namespace Garage.Controllers
 
         private CreateOrEditViewModel GenerateEditViewModel(Vehicle parkedVehicle, float placesLeft)
         {
-            var vehicleItemList = GetSelectItemsList(placesLeft);
-            SelectList vehicleTypes = new SelectList(_context.VehicleType, "Id", "Name");
+           SelectList vehicleTypes = new SelectList(_context.VehicleType
+               .Where(vt => vt.VehicleSize >= parkedVehicle.VehicleType.VehicleSize)
+               , "Id", "Name");
 
             var viewModel = new CreateOrEditViewModel
             {

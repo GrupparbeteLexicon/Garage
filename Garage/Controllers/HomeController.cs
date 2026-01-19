@@ -24,12 +24,11 @@ namespace Garage.Controllers
             HomeViewModel homeViewModel = new HomeViewModel();
 
             float capacity = CountPlacesExtension.GetCapacity(_context);
-            int vehiclesParked = query.Count();
-            float placesUsed = CountPlacesExtension.CountPlaces(query);
-            string placesLeft = CountPlacesExtension.ToMixedFraction(capacity - placesUsed);
+            float placesUsed = CountPlacesExtension.CountPlacesUsed(query);
+            string placesLeft = (capacity - placesUsed).ToString();
 
             homeViewModel.Capacity = capacity;
-            homeViewModel.VehiclesParked = vehiclesParked;
+            homeViewModel.VehiclesParked = (int)placesUsed;
             homeViewModel.PlacesLeft = placesLeft;
             homeViewModel.GarageIsFull = placesUsed > homeViewModel.Capacity;
 

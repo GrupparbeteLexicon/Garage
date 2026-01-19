@@ -16,6 +16,7 @@ namespace Garage.ViewModels
         [Range(1, int.MaxValue, ErrorMessage = "Please select a vehicle type")]
         public int VehicleTypeId { get; set; }
 
+        [ValidateNever]
         public VehicleType SelectedVehicleType { get; set; }
         [ValidateNever]
         public SelectList VehicleTypeList { get; set; }

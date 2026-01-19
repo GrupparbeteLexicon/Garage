@@ -9,9 +9,30 @@
 
 <div class="d-flex flex-column gap-2">
     <div class="d-flex flex-column flex-md-row align-items-center gap-2">
+        <div class="d-flex w-50 ms-auto gap-2">
+            <dl class="row">
+                <dt class="col-6 text-end">
+                    <strong>Capacity:</strong>
+                </dt>
+                <dd class="col-6 text-start">
+                    @(Model.Capacity)
+                </dd>
+                <dt class="col-6 text-end">
+                    <strong>Places left:</strong>
+                </dt>
+                <dd class="col-6 text-start">
+                    @(Model.PlacesLeft)
+                </dd>
+                <dt class="col-6 text-end">
+                    <strong>Vehicles parked:</strong>
+                </dt>
+                <dd class="col-6 text-start">
+                    @(Model.VehiclesParked)
+                </dd>
+            </dl>
+        </div>
         <!-- Search form -->
         <form class="d-flex w-50 ms-auto" method="get">
-            <!-- Här la vi till ms-auto -->
             <div class="input-group">
                 <input type="text"
                        class="form-control"

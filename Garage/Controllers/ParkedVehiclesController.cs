@@ -53,6 +53,7 @@ namespace Garage.Controllers
                 Vehicles = vehicles,
                 PlacesUsed = placesUsed,
                 PlacesLeft = (GetCapacity(_context) - CountPlacesUsed(query)).ToString(),
+                
                 Search = search,
                 VehicleTypeId = vehicleTypeId,
                 VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name")
@@ -115,9 +116,14 @@ namespace Garage.Controllers
             var viewModel = new ManageViewModel
             {
                 Vehicles = vehicles,
+
                 VehicleTypeList = new SelectList(_context.VehicleType, "Id", "Name"),
                 VehicleTypeId = vehicleTypeId,
-                Search = search
+                Search = search,
+
+                Capacity = GetCapacity(_context).ToString(),
+                VehiclesParked = CountPlacesUsed(query).ToString(),
+                PlacesLeft = (GetCapacity(_context) - CountPlacesUsed(query)).ToString()
             };
 
             return View(viewModel);

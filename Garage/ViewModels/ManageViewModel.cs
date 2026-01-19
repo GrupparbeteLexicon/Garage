@@ -9,5 +9,9 @@ namespace Garage.ViewModels
         public SelectList VehicleTypeList { get; set; }
         public int? VehicleTypeId { get; set; }
         public string? Search { get; set; }
+
+        public string Capacity { get; set; }
+        public string VehiclesParked { get; set; }
+        public string PlacesLeft { get; set; }
     }
 }

@@ -130,13 +130,12 @@ public class SeedData
     private static async Task SeedVehicleTypes()
     {
         VehicleType[] types = [
-            new() {Name = "Car",        VehicleSize = 4},
-            new() {Name = "Motorcycle", VehicleSize = 2},
-            new() {Name = "Truck",      VehicleSize = 6},
-            new() {Name = "ATV",        VehicleSize = 3},
-            new() {Name = "Bus",        VehicleSize = 8},
-            new() {Name = "Airplane",   VehicleSize = 28},
-            new() {Name = "Boat",       VehicleSize = 9},
+            new() {Name = "Car",        VehicleSize = 1},
+            new() {Name = "Van",        VehicleSize = 1},
+            new() {Name = "Motorcycle", VehicleSize = 0},
+            new() {Name = "Truck",      VehicleSize = 2},
+            new() {Name = "ATV",        VehicleSize = 0},
+            new() {Name = "Bus",        VehicleSize = 2},
         ];
 
         await _context.VehicleType.AddRangeAsync(types);

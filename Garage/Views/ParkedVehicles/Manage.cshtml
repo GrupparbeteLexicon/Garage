@@ -1,31 +1,36 @@
-﻿@using Garage.ViewModels
-
-
-@* @model IEnumerable<Garage.ViewModels.ParkingVehicleViewModel>; *@
-@model ParkingIndexViewModel
+﻿@using Garage.Extensions
+@model Garage.ViewModels.ManageViewModel;
 
 @{
-    ViewData["Title"] = "Parked Vehicles";
+    ViewData["Title"] = "Manage Parked Vehicles";
 }
 
-<h1>Parked Vehicles</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div class="d-flex flex-column gap-2">
     <div class="d-flex flex-column flex-md-row align-items-center gap-2">
-
-        @if (Model.IsFull)
-        {
-            <button class="btn btn-danger" disabled>
-                Can't park vehicles
-            </button>
-        }
-        else
-        {
-            <a asp-action="Park" class="btn btn-primary">
-                Park a new Vehicle
-            </a>
-        }
-
+        <div class="d-flex w-50 ms-auto gap-2">
+            <dl class="row">
+                <dt class="col-6 text-end">
+                    <strong>Capacity:</strong>
+                </dt>
+                <dd class="col-6 text-start">
+                    @(Model.Capacity)
+                </dd>
+                <dt class="col-6 text-end">
+                    <strong>Places left:</strong>
+                </dt>
+                <dd class="col-6 text-start">
+                    @(Model.PlacesLeft)
+                </dd>
+                <dt class="col-6 text-end">
+                    <strong>Vehicles parked:</strong>
+                </dt>
+                <dd class="col-6 text-start">
+                    @(Model.VehiclesParked)
+                </dd>
+            </dl>
+        </div>
         <!-- Search form -->
         <form class="d-flex w-50 ms-auto" method="get">
             <div class="input-group">
@@ -46,8 +51,8 @@
                     Search
                 </button>
 
-                <a asp-action="Index"
-                   class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(Model.Search) && ViewData["Type"] == null ? "disabled" : "")">
+                <a asp-action="Manage"
+                   class="btn btn-outline-secondary @(string.IsNullOrWhiteSpace(Model.Search) && Model.VehicleTypeId == null ? "disabled" : "")">
                     Clear
                 </a>
             </div>
@@ -64,10 +69,16 @@
     <thead>
         <tr>
             <th scope="col">
+                @Html.DisplayNameFor(model => model.Vehicles[0].Owner)
+            </th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.Vehicles[0].VehicleType)
             </th>
             <th scope="col">
                 @Html.DisplayNameFor(model => model.Vehicles[0].Registration)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Vehicles[0].ParkingSpot)
             </th>
             <th scope="col">
                 @Html.DisplayNameFor(model => model.Vehicles[0].ParkTime)
@@ -83,16 +94,22 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.VehicleType.Name)
+                    @Html.DisplayFor(modelItem => item.Owner)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VehicleType)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Registration)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.ParkingSpot)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.ParkTime)
                 </td>
                 <td>
-                    @item.ParkedDuration
+                    @Html.DisplayFor(modelItem => item.ParkedDuration)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

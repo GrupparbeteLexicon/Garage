@@ -1,6 +1,5 @@
 #nullable disable
 using System.ComponentModel.DataAnnotations;
-using Garage.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Garage.Areas.Admin.Pages.Roles;
 
-[Authorize(Roles = UserRoles.Admin)]
+[Authorize(Policy = "RequireAdmin")]
 public class CreateModel : PageModel
 {
     private readonly RoleManager<IdentityRole> _roleManager;

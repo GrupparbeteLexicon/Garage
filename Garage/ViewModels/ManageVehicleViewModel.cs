@@ -1,14 +1,21 @@
 ﻿using Garage.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace Garage.ViewModels
 {
-    public class ParkingVehicleViewModel
+    public class ManageVehicleViewModel
     {
         public int Id { get; }
 
         [Display(Name = "Vehicle Type")]
-        public VehicleType VehicleType { get; }
+        public string VehicleType { get; }
+
+        [Display(Name = "Owner")]
+        public string Owner { get; set; }
+
+        [Display(Name = "Parking Spot")]
+        public string ParkingSpot { get; set; }
 
         [Display(Name = "Registration Number")]
         public string Registration { get; }
@@ -43,14 +50,15 @@ namespace Garage.ViewModels
             }
         }
 
-        public ParkingVehicleViewModel(Vehicle vehicle)
+        public ManageVehicleViewModel(Vehicle vehicle)
         {
             ArgumentNullException.ThrowIfNull(vehicle);
-
             Id = vehicle.Id;
+            VehicleType = vehicle.VehicleType.Name;
+            Owner = vehicle.Owner.FullName;
+            ParkingSpot = vehicle.ParkingSpot?.Name ?? "Not Parked";
             Registration = vehicle.Registration;
-            VehicleType = vehicle.VehicleType;
-            ParkTime = vehicle.ParkingSpot!.ParkTime;
+            ParkTime = vehicle.ParkingSpot?.ParkTime;
             Color = vehicle.Color;
             Brand = vehicle.Brand;
             Model = vehicle.Model;

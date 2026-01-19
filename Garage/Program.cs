@@ -1,9 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Garage.Configuration.Garage.Configuration;
 using Garage.Data;
 using Garage.Extensions;
 using Garage.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Garage
 {
@@ -12,11 +13,21 @@ namespace Garage
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.Configure<IdentityOptionsConfig>(builder.Configuration.GetSection("Identity")); // protected roles in appsettings.json
+
             builder.Services.AddDbContext<GarageContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("GarageContext") ?? throw new InvalidOperationException("Connection string 'GarageContext' not found.")));
+            
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<GarageContext>();
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireMember", policy => policy.RequireRole("Member", "Admin"));
+                options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+            });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

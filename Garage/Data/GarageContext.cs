@@ -23,10 +23,15 @@ public class GarageContext(DbContextOptions<GarageContext> options) : IdentityDb
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Vehicle>()
-            .HasOne(v => v.ParkingSpot)          
-            .WithOne(p => p.ParkedVehicle)              
-            .HasForeignKey<Vehicle>(v => v.ParkingSpotId)  
+            .HasOne(v => v.ParkingSpot)
+            .WithOne(p => p.ParkedVehicle)
+            .HasForeignKey<Vehicle>(v => v.ParkingSpotId)
             .OnDelete(DeleteBehavior.SetNull);
+        //modelBuilder.Entity<ParkingSpot>()
+        //.HasOne(ps => ps.ParkedVehicle)
+        //.WithOne(v => v.ParkingSpot)
+        //.HasForeignKey<ParkingSpot>(ps => ps.ParkedVehicleID)
+        //.OnDelete(DeleteBehavior.SetNull);
     }
 
     // Seed data

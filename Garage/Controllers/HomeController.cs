@@ -3,7 +3,7 @@ using Garage.Models;
 using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using static Garage.Extensions.CountPlacesExtension;
+using Garage.Extensions;
 
 namespace Garage.Controllers
 {
@@ -23,17 +23,18 @@ namespace Garage.Controllers
             var query = _context.ParkedVehicle.AsQueryable();
             HomeViewModel homeViewModel = new HomeViewModel();
 
-            int vehiclesParked = query.Count();
-            float placesUsed = CountPlaces(query);
-            string placesLeft = ToMixedFraction(homeViewModel.Capacity - placesUsed);
+            float capacity = CountPlacesExtension.GetCapacity(_context);
+            float placesUsed = CountPlacesExtension.CountPlacesUsed(query);
+            string placesLeft = (capacity - placesUsed).ToString();
 
-            homeViewModel.VehiclesParked = vehiclesParked;
+            homeViewModel.Capacity = capacity;
+            homeViewModel.VehiclesParked = (int)placesUsed;
             homeViewModel.PlacesLeft = placesLeft;
             homeViewModel.GarageIsFull = placesUsed > homeViewModel.Capacity;
 
             return View(homeViewModel);
         }
-
+        
         public IActionResult Privacy()
         {
             return View();

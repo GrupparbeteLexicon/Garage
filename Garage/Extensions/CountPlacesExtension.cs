@@ -15,7 +15,7 @@ public static class CountPlacesExtension
 
         foreach (var vehicle in vehicles)
         {
-            placesUsed += GetPlaceSizeForVehicleType(vehicle.VehicleType);
+            placesUsed += vehicle.VehicleType.VehicleSize;
         }
 
         return (float)placesUsed / 3; // Since 1 Place = 3 Units
@@ -27,26 +27,10 @@ public static class CountPlacesExtension
 
         foreach (var vehicle in vehicles)
         {
-            placesUsed += GetPlaceSizeForVehicleType(vehicle.VehicleType);
+            placesUsed += vehicle.VehicleType.VehicleSize;
         }
 
         return (float)placesUsed / 3; // Since 1 Place = 3 Units
-    }
-
-    private static int GetPlaceSizeForVehicleType(VehicleType vehicleType)
-    {
-        return 0;
-        //return vehicleType switch
-        //{
-        //    VehicleTypeModel.MOTORCYCLE => 1, // 1/3 Place
-        //    VehicleTypeModel.ATV => 3, // 1 Place
-        //    VehicleTypeModel.CAR => 3, // 1 Place
-        //    VehicleTypeModel.AIRPLANE => 9, // 3 Places
-        //    VehicleTypeModel.BOAT => 9, // 3 Places
-        //    VehicleTypeModel.BUS => 9, // 3 Places
-        //    VehicleTypeModel.TRUCK => 6, // 2 Places
-        //    _ => 1
-        //};
     }
 
     public static List<SelectListItem> GetSelectItemsList(float placesLeft)

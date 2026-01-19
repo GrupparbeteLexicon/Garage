@@ -1,0 +1,109 @@
+@page
+@using Garage.Extensions
+@model ListModel
+
+@{
+    ViewData["Title"] = "User List";
+}
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_Validation"></partial>
+
+<div class="container my-4">
+<div class="card shadow-sm">
+<div class="card-body">
+    <form id="userSearchForm" class="row g-3 align-items-end">
+
+    <!-- Search Input + Clear Button -->
+    <div class="col-12 col-md-5 col-lg-4">
+    <div class="input-group">
+        <span class="input-group-text bg-white border-end-0">
+            <img src="~/icons/search.svg" alt="search icon" />
+        </span>
+        <input
+            type="search"
+            class="form-control border-start-0"
+            name="q"
+            asp-for="Query"
+            placeholder="Search users by name, email..."
+            autocomplete="off"
+        >
+        <button
+            class="btn btn-outline-secondary d-none"
+            type="button"
+            title="Clear search"
+        >
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+    </div>
+
+    <!-- Role Filter -->
+    <div class="col-6 col-md-3 col-lg-2">
+        <label class="form-label mb-0 small text-muted">
+            Role
+        </label>
+        <select name="role" asp-for="RoleFilter" asp-items="Model.Roles" class="form-select">
+            <option value="" selected>All roles</option>
+        </select>
+    </div>
+
+    <!-- Buttons -->
+    <div class="col-12 col-md-auto ms-md-auto mt-3 mt-md-0">
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-filter me-1"></i>Filter
+        </button>
+        <a
+            asp-page="./List"
+            class="btn btn-outline-secondary">
+            Reset
+        </a>
+    </div>
+    </div>
+
+    </form>
+</div>
+</div>
+</div>
+<table class="table table-striped my-5">
+    <thead>
+    <tr>
+        <th scope="col">
+            Name
+        </th>
+        <th scope="col">
+            Vehicles
+        </th>
+        <th scope="col">
+            Total Revenue
+        </th>
+        <th>
+            Actions
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model.Users)
+    {
+        <tr>
+            <td>
+                @user.Name
+            </td>
+            <td>
+                @user.Vehicles.Count()
+            </td>
+            <td>
+                @user.Vehicles.Sum(s => (DateTime.Now - s.ParkingSpot?.ParkTime)?.ParkedTimeToPrice())
+            </td>
+            <td>
+                <a asp-page="./Details" asp-route-id="@user.Id">Details</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@if (!Model.Users.Any())
+{
+    <p class="text-muted">No users matched your search.</p>
+}

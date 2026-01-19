@@ -3,6 +3,7 @@ using Garage.Models;
 using Garage.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using static Garage.Extensions.CountPlacesExtension;
 
 namespace Garage.Controllers
@@ -20,7 +21,7 @@ namespace Garage.Controllers
 
         public IActionResult Index()
         {
-            var query = _context.Vehicle.AsQueryable();
+            var query = _context.ParkedVehicle.Include(s => s.VehicleType).AsQueryable();
             HomeViewModel homeViewModel = new HomeViewModel();
 
             int vehiclesParked = query.Count();

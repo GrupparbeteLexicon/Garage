@@ -21,7 +21,7 @@ namespace Garage.Controllers
 
         public IActionResult Index()
         {
-            var query = _context.ParkedVehicle.Include(s => s.VehicleType).AsQueryable();
+            var query = _context.Vehicle.Include(s => s.VehicleType).AsQueryable();
             HomeViewModel homeViewModel = new HomeViewModel();
 
             int vehiclesParked = query.Count();
